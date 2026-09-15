@@ -138,49 +138,18 @@ export default async function handler(req, res) {
   }
 
   // Build prompt
-  const prompt = `You are FSTR, an AI that helps students learn faster from YouTube videos.
+  const prompt = `You are FSTR, an AI learning tool. Analyse this YouTube video and return educational content.
 
-Analyse this YouTube video: ${url.trim()}
+Video URL: ${url.trim()}
 Video ID: ${videoId}
 
-Use your knowledge of this video or generate a realistic, accurate educational analysis.
-Be specific to the actual video content — not generic.
+Important: Use your knowledge of this video to provide SPECIFIC and DETAILED content — not generic placeholders. If you don't know the exact video, make the analysis realistic and educational based on the topic the URL suggests.
 
-Return ONLY a valid JSON object. No markdown. No backticks. No explanation outside the JSON.
+You MUST return ONLY a valid raw JSON object. No markdown. No backticks. No text before or after the JSON. Start your response with { and end with }.
 
-{
-  "videoTitle": "actual video title",
-  "channelName": "channel name",
-  "tldr": "2-3 sentence plain English summary of what this video teaches and why it matters to a student",
-  "concepts": [
-    {"title": "Concept name", "explanation": "Clear 1-2 sentence explanation"},
-    {"title": "Concept name", "explanation": "explanation"},
-    {"title": "Concept name", "explanation": "explanation"},
-    {"title": "Concept name", "explanation": "explanation"},
-    {"title": "Concept name", "explanation": "explanation"}
-  ],
-  "quiz": [
-    {
-      "question": "specific question testing understanding of video content",
-      "options": ["option A", "option B", "option C", "option D"],
-      "correct": 0,
-      "explanation": "why this answer is correct and what the others miss"
-    },
-    {"question":"...","options":["...","...","...","..."],"correct":1,"explanation":"..."},
-    {"question":"...","options":["...","...","...","..."],"correct":2,"explanation":"..."},
-    {"question":"...","options":["...","...","...","..."],"correct":0,"explanation":"..."},
-    {"question":"...","options":["...","...","...","..."],"correct":3,"explanation":"..."}
-  ],
-  "studyPlan": {
-    "intro": "One sentence on what skill this video helps build",
-    "weeks": [
-      {"week": "Week 1", "title": "Foundation", "description": "Specific actions for this week based on the video"},
-      {"week": "Week 2", "title": "Practice", "description": "How to practice what was learned"},
-      {"week": "Week 3", "title": "Apply", "description": "Real project or application to cement the knowledge"}
-    ],
-    "nextVideo": "Specific next video title to search on YouTube to continue learning this topic"
-  }
-}`;
+Use this EXACT structure:
+
+{"videoTitle":"The actual title of this video","channelName":"The YouTube channel name","tldr":"A detailed 3-4 sentence summary explaining exactly what this video teaches, why it matters, and what the viewer will understand by the end. Be specific to this video's content.","concepts":[{"title":"First key concept title","explanation":"Detailed 2-3 sentence explanation of this concept as taught in the video. Include the why and how, not just the what."},{"title":"Second concept","explanation":"Detailed explanation"},{"title":"Third concept","explanation":"Detailed explanation"},{"title":"Fourth concept","explanation":"Detailed explanation"},{"title":"Fifth concept","explanation":"Detailed explanation"},{"title":"Sixth concept","explanation":"Detailed explanation"},{"title":"Seventh concept","explanation":"Detailed explanation"}],"quiz":[{"question":"A specific question testing real understanding of this video content — not just recall","options":["Plausible wrong answer","Correct answer","Another plausible wrong answer","Another wrong answer"],"correct":1,"explanation":"Detailed explanation of why this is correct and what the wrong answers miss"},{"question":"Second question","options":["A","B","C","D"],"correct":0,"explanation":"Explanation"},{"question":"Third question","options":["A","B","C","D"],"correct":2,"explanation":"Explanation"},{"question":"Fourth question","options":["A","B","C","D"],"correct":3,"explanation":"Explanation"},{"question":"Fifth question","options":["A","B","C","D"],"correct":1,"explanation":"Explanation"}],"studyPlan":{"intro":"One sentence describing what skill or knowledge this video is helping build.","weeks":[{"week":"Week 1","title":"Build the Foundation","goal":"What the student should understand or be able to do by end of week 1","days":[{"label":"Day 1-2","task":"Specific actionable task for these days related to this video content"},{"label":"Day 3-4","task":"Specific actionable task"},{"label":"Day 5-7","task":"Specific actionable task to consolidate week 1 learning"}]},{"week":"Week 2","title":"Practice and Apply","goal":"What the student should be able to do independently by end of week 2","days":[{"label":"Day 1-2","task":"Specific practice task"},{"label":"Day 3-5","task":"Specific project or exercise"},{"label":"Day 6-7","task":"Review and reinforce"}]},{"week":"Week 3","title":"Build Something Real","goal":"A completed project or demonstrated skill that proves mastery","days":[{"label":"Project","task":"Specific project description that uses everything learned"},{"label":"Requirements","task":"What the finished project must include or demonstrate"},{"label":"Share","task":"How to publish, share or present the finished work"}]}],"nextVideo":"Specific YouTube search query to find the best next video to watch on this topic"}}`;
 
   // Call Gemini API
   try {
@@ -192,8 +161,8 @@ Return ONLY a valid JSON object. No markdown. No backticks. No explanation outsi
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            maxOutputTokens: 2000,
-            temperature: 0.7
+            maxOutputTokens: 4000,
+            temperature: 0.5
           },
           safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
