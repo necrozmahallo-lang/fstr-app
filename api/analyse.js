@@ -22,12 +22,14 @@ function isRateLimited(ip) {
 
 function extractVideoId(url) {
   try {
+    // Clean the URL first — remove any timestamp or playlist params that confuse parsing
     const parsed = new URL(url);
     if (!['www.youtube.com','youtube.com','youtu.be','m.youtube.com'].includes(parsed.hostname)) return null;
     if (parsed.hostname === 'youtu.be') {
       const id = parsed.pathname.slice(1).split('/')[0];
       return /^[a-zA-Z0-9_-]{11}$/.test(id) ? id : null;
     }
+    // Get the v parameter only — ignore t=, list=, etc.
     const v = parsed.searchParams.get('v');
     if (v && /^[a-zA-Z0-9_-]{11}$/.test(v)) return v;
     const embedMatch = parsed.pathname.match(/\/embed\/([a-zA-Z0-9_-]{11})/);
@@ -58,13 +60,33 @@ async function fetchTranscript(videoId) {
     });
     const html = await pageRes.text();
 
-    // Extract video title
-    const titleMatch = html.match(/"title":"([^"]+)"/);
-    const title = titleMatch ? titleMatch[1].replace(/\\u0026/g,'&').replace(/\\"/g,'"') : '';
+    // Extract video title — try multiple patterns
+    const titlePatterns = [
+      /"title":{"runs":\[{"text":"([^"]+)"/,
+      /"title":"([^"]+)"/,
+      /<title>([^<]+) - YouTube<\/title>/,
+      /og:title" content="([^"]+)"/
+    ];
+    let title = '';
+    for (const pattern of titlePatterns) {
+      const m = html.match(pattern);
+      if (m && m[1] && m[1].length > 3 && !m[1].includes('{{')) {
+        title = m[1].replace(/\\u0026/g,'&').replace(/\\"/g,'"').replace(/\\\\/g,'\\');
+        break;
+      }
+    }
 
-    // Extract channel name
-    const channelMatch = html.match(/"ownerChannelName":"([^"]+)"/);
-    const channel = channelMatch ? channelMatch[1] : '';
+    // Extract channel name — try multiple patterns
+    const channelPatterns = [
+      /"ownerChannelName":"([^"]+)"/,
+      /"author":"([^"]+)"/,
+      /"channelName":"([^"]+)"/
+    ];
+    let channel = '';
+    for (const pattern of channelPatterns) {
+      const m = html.match(pattern);
+      if (m && m[1]) { channel = m[1]; break; }
+    }
 
     // Find caption tracks in the page source
     const captionMatch = html.match(/"captionTracks":(\[.*?\])/);
