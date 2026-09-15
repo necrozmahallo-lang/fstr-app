@@ -1,0 +1,9 @@
+{
+  "name": "fstr-app",
+  "version": "1.0.0",
+  "description": "FSTR — Learn faster from YouTube",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": { "dev": "vercel dev" },
+  "devDependencies": { "vercel": "latest" }
+}

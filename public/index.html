@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="description" content="FSTR — Paste any YouTube link. Get a breakdown, quiz, and study plan instantly. Free."/>
+<title>FSTR — Learn Faster from YouTube</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06060a;--surface:rgba(255,255,255,0.04);--surface-2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border-bright:rgba(255,255,255,0.16);
+  --text:#f0f0f5;--text-2:rgba(240,240,245,0.55);--text-3:rgba(240,240,245,0.3);
+  --lime:#c8f135;--lime-dim:rgba(200,241,53,0.1);--lime-glow:rgba(200,241,53,0.25);
+  --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.15);--blue:#3b82f6;
+  --green:#10b981;--green-dim:rgba(16,185,129,0.1);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.1);
+  --r:12px;--r-lg:20px;--r-xl:28px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");opacity:0.4;}
+.orb{position:fixed;border-radius:50%;pointer-events:none;z-index:0;filter:blur(120px);animation:orbFloat 14s ease-in-out infinite;}
+.orb-1{width:700px;height:700px;background:radial-gradient(circle,rgba(139,92,246,0.2),transparent 70%);top:-200px;left:-200px;}
+.orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(200,241,53,0.1),transparent 70%);bottom:-100px;right:-100px;animation-delay:-5s;}
+.orb-3{width:380px;height:380px;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);top:40%;left:55%;animation-delay:-9s;}
+@keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-25px) scale(1.04);}66%{transform:translate(-20px,30px) scale(0.97);}}
+nav,main,.hero,.how-section,.proof-section,footer,.library-section{position:relative;z-index:1;}
+nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);animation:fadeDown 0.6s ease both;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.5px;background:linear-gradient(135deg,#fff 30%,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--lime);background:var(--lime-dim);border:1px solid var(--lime-glow);padding:3px 10px;border-radius:20px;}
+.nav-cta{background:var(--lime);color:#0a0a0a;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.nav-cta:hover{background:#d4f750;box-shadow:0 0 24px var(--lime-glow);transform:translateY(-1px);}
+.nav-lib-btn{background:var(--surface);border:1px solid var(--border-bright);color:var(--text-2);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
+.nav-lib-btn:hover{background:var(--surface-2);color:var(--text);}
+.lib-count{background:var(--lime);color:#0a0a0a;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;}
+.hero{max-width:860px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center;}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.08em;color:var(--text-2);background:rgba(255,255,255,0.05);border:1px solid var(--border-bright);padding:6px 16px;border-radius:20px;margin-bottom:2rem;animation:fadeUp 0.7s 0.1s ease both;}
+.eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:pulse 2s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(40px,7vw,80px);font-weight:800;line-height:1.04;letter-spacing:-3px;margin-bottom:1.5rem;animation:fadeUp 0.7s 0.2s ease both;}
+.grad{background:linear-gradient(135deg,#fff,rgba(255,255,255,0.6));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lime-text{background:linear-gradient(135deg,var(--lime),#a8d428);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:17px;color:var(--text-2);line-height:1.7;max-width:500px;margin:0 auto 2.5rem;animation:fadeUp 0.7s 0.3s ease both;}
+.hero-cta-row{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;animation:fadeUp 0.7s 0.4s ease both;}
+.btn-hero{background:var(--lime);color:#0a0a0a;font-size:15px;font-weight:700;padding:14px 32px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;box-shadow:0 0 40px rgba(200,241,53,0.2);display:flex;align-items:center;gap:8px;}
+.btn-hero:hover{background:#d4f750;box-shadow:0 0 60px rgba(200,241,53,0.35);transform:translateY(-2px);}
+.btn-ghost{font-size:14px;color:var(--text-2);background:none;border:1px solid var(--border-bright);padding:13px 24px;border-radius:var(--r);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.btn-ghost:hover{background:var(--surface);color:var(--text);}
+.stats-strip{display:flex;justify-content:center;max-width:480px;margin:3.5rem auto 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;animation:fadeUp 0.7s 0.5s ease both;}
+.stat-item{flex:1;padding:1.1rem;text-align:center;border-right:1px solid var(--border);}
+.stat-item:last-child{border-right:none;}
+.stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--lime);}
+.stat-label{font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:0.05em;font-weight:600;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
+.demo-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-3);margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;animation:fadeUp 0.6s 0.1s ease both;}
+.demo-label::before,.demo-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);}
+.steps-row{display:flex;justify-content:center;gap:0;margin-bottom:1.5rem;animation:fadeUp 0.6s 0.3s ease both;}
+.step-pill{display:flex;align-items:center;gap:6px;padding:7px 14px;font-size:11px;font-weight:600;color:var(--text-3);letter-spacing:0.04em;border:1px solid var(--border);background:var(--surface);}
+.step-pill:first-child{border-radius:var(--r) 0 0 var(--r);}
+.step-pill:last-child{border-radius:0 var(--r) var(--r) 0;}
+.step-pill:not(:first-child){border-left:none;}
+.step-pill.active{color:var(--lime);background:var(--lime-dim);border-color:rgba(200,241,53,0.2);}
+.step-pill.done{color:var(--green);}
+.step-num{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
+.step-pill.active .step-num{background:var(--lime);color:#0a0a0a;}
+.step-pill.done .step-num{background:var(--green);color:#fff;}
+.input-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:fadeUp 0.6s 0.2s ease both;transition:border-color 0.3s,box-shadow 0.3s;}
+.input-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.35),transparent);}
+.input-card:focus-within{border-color:rgba(200,241,53,0.2);box-shadow:0 0 60px rgba(200,241,53,0.04);}
+.input-row{display:flex;gap:10px;}
+.url-input{flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;font-size:14px;font-family:'Inter',sans-serif;color:var(--text);outline:none;transition:all 0.2s;}
+.url-input:focus{border-color:rgba(200,241,53,0.4);background:rgba(255,255,255,0.08);box-shadow:0 0 0 3px rgba(200,241,53,0.06);}
+.url-input::placeholder{color:var(--text-3);}
+.go-btn{background:linear-gradient(135deg,var(--lime),#a8d428);color:#0a0a0a;font-size:13px;font-weight:700;padding:14px 24px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;min-width:120px;display:flex;align-items:center;justify-content:center;gap:6px;box-shadow:0 4px 24px rgba(200,241,53,0.2);}
+.go-btn:hover:not(:disabled){box-shadow:0 4px 36px rgba(200,241,53,0.35);transform:translateY(-1px);}
+.go-btn:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+.go-btn:active:not(:disabled){transform:scale(0.98);}
+.input-hint{font-size:12px;color:var(--text-3);margin-top:12px;line-height:1.5;text-align:center;}
+.error-msg{font-size:13px;color:var(--red);margin-top:10px;padding:10px 14px;background:var(--red-dim);border-radius:var(--r);border:1px solid rgba(239,68,68,0.2);display:none;}
+.error-msg.show{display:block;}
+.loading-overlay{position:fixed;inset:0;background:rgba(6,6,10,0.92);backdrop-filter:blur(16px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;}
+.loading-overlay.show{display:flex;animation:fadeIn 0.3s ease;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.loader-ring{width:64px;height:64px;position:relative;}
+.loader-ring::before,.loader-ring::after{content:'';position:absolute;inset:0;border-radius:50%;}
+.loader-ring::before{border:2px solid rgba(200,241,53,0.1);}
+.loader-ring::after{border:2px solid transparent;border-top-color:var(--lime);animation:spin 0.75s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-dots{display:flex;justify-content:center;gap:6px;}
+.loader-dot{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:dotPulse 1.4s ease-in-out infinite;}
+.loader-dot:nth-child(2){animation-delay:0.2s;}
+.loader-dot:nth-child(3){animation-delay:0.4s;}
+@keyframes dotPulse{0%,80%,100%{transform:scale(0.6);opacity:0.3;}40%{transform:scale(1);opacity:1;}}
+.loading-text-big{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--text);}
+.loading-step-sm{font-size:13px;color:var(--text-3);}
+.loading-progress-wrap{width:220px;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.loading-bar{height:100%;background:linear-gradient(90deg,var(--lime),#a8d428);border-radius:2px;width:0%;transition:width 0.6s ease;box-shadow:0 0 8px var(--lime-glow);}
+#resultSection{display:none;}
+.result-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:1.5rem;animation:resultReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes resultReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
+.result-card::before{content:'';display:block;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.3),rgba(139,92,246,0.2),transparent);}
+.video-meta{padding:1.5rem;display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--border);}
+.video-thumb{width:88px;height:58px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;font-size:24px;}
+.video-thumb img{width:100%;height:100%;object-fit:cover;}
+.video-info{flex:1;min-width:0;}
+.video-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);line-height:1.4;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.video-channel{font-size:12px;color:var(--text-3);}
+.video-badge{font-size:10px;font-weight:700;letter-spacing:0.06em;background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.2);padding:3px 8px;border-radius:6px;margin-top:6px;display:inline-block;}
+.result-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
+.action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.2s;}
+.action-btn:hover{border-color:var(--border-bright);color:var(--text);background:var(--surface-2);}
+.action-btn.save{border-color:rgba(200,241,53,0.3);color:var(--lime);background:var(--lime-dim);}
+.action-btn.save:hover{background:rgba(200,241,53,0.18);}
+.action-btn.saved{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-dim);cursor:default;}
+.action-btn.pdf{border-color:rgba(139,92,246,0.3);color:#a78bfa;background:var(--purple-dim);}
+.action-btn.pdf:hover{background:rgba(139,92,246,0.22);}
+.tabs{display:flex;padding:0 1.5rem;border-bottom:1px solid var(--border);overflow-x:auto;gap:0;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{padding:14px 0;margin-right:28px;font-size:13px;font-weight:600;color:var(--text-3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
+.tab:hover{color:var(--text-2);}
+.tab.active{color:var(--lime);border-bottom-color:var(--lime);}
+.tab-panel{display:none;padding:1.75rem;}
+.tab-panel.active{display:block;animation:panelFade 0.35s ease both;}
+@keyframes panelFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+.tldr-box{background:linear-gradient(135deg,rgba(200,241,53,0.06),rgba(168,212,40,0.02));border:1px solid rgba(200,241,53,0.15);border-radius:var(--r-lg);padding:1.25rem 1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
+.tldr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.35),transparent);}
+.tldr-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--lime);margin-bottom:8px;font-family:'Syne',sans-serif;display:flex;align-items:center;gap:8px;}
+.tldr-label::after{content:'';flex:1;height:1px;background:rgba(200,241,53,0.2);}
+.tldr-text{font-size:14px;color:var(--text-2);line-height:1.8;}
+.section-head{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--text-3);margin-bottom:14px;font-family:'Syne',sans-serif;}
+.concept-list{display:flex;flex-direction:column;gap:10px;}
+.concept-item{display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px;transition:all 0.2s;}
+.concept-item:hover{border-color:var(--border-bright);background:var(--surface-2);}
+.concept-num{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--purple),#6366f1);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;}
+.concept-text{font-size:13px;color:var(--text-2);line-height:1.75;}
+.concept-text strong{color:var(--text);font-weight:600;display:block;margin-bottom:5px;font-size:13.5px;}
+.quiz-intro{font-size:13px;color:var(--text-3);margin-bottom:1.25rem;line-height:1.6;}
+.quiz-questions{display:flex;flex-direction:column;gap:14px;}
+.q-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;transition:all 0.3s;}
+.q-item.correct{border-color:rgba(16,185,129,0.4);background:rgba(16,185,129,0.04);}
+.q-item.wrong{border-color:rgba(239,68,68,0.4);background:rgba(239,68,68,0.03);}
+.q-num{font-size:10px;font-weight:700;letter-spacing:0.08em;color:var(--text-3);margin-bottom:8px;font-family:'Syne',sans-serif;}
+.q-text{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;line-height:1.6;}
+.q-options{display:flex;flex-direction:column;gap:7px;}
+.q-option{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:var(--r);cursor:pointer;transition:all 0.18s;font-size:13px;color:var(--text-2);border:1px solid transparent;user-select:none;background:rgba(255,255,255,0.03);line-height:1.55;}
+.q-option:hover:not(.disabled){background:rgba(255,255,255,0.07);color:var(--text);border-color:var(--border);}
+.q-option.selected-correct{background:var(--green-dim);color:var(--green);border-color:rgba(16,185,129,0.3);font-weight:500;}
+.q-option.selected-wrong{background:rgba(239,68,68,0.08);color:var(--red);border-color:rgba(239,68,68,0.3);font-weight:500;}
+.q-option.show-correct{background:var(--green-dim);color:var(--green);border-color:rgba(16,185,129,0.25);}
+.q-option input{accent-color:var(--lime);flex-shrink:0;pointer-events:none;width:15px;height:15px;margin-top:2px;}
+.q-feedback{font-size:12.5px;margin-top:10px;font-weight:500;display:none;line-height:1.65;padding:12px 14px;border-radius:8px;}
+.q-feedback.show{display:block;animation:fadeIn 0.3s ease;}
+.q-feedback.ok{color:var(--green);background:var(--green-dim);}
+.q-feedback.no{color:var(--red);background:var(--red-dim);}
+.quiz-submit{margin-top:1.5rem;background:linear-gradient(135deg,var(--lime),#a8d428);color:#0a0a0a;font-size:13px;font-weight:700;padding:12px 26px;border-radius:var(--r);border:none;cursor:pointer;font-family:'Syne',sans-serif;transition:all 0.2s;box-shadow:0 4px 20px rgba(200,241,53,0.15);}
+.quiz-submit:hover:not(:disabled){box-shadow:0 4px 30px rgba(200,241,53,0.3);transform:translateY(-1px);}
+.quiz-submit:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+.score-bar{background:linear-gradient(135deg,rgba(200,241,53,0.07),rgba(168,212,40,0.03));border:1px solid rgba(200,241,53,0.18);border-radius:var(--r-lg);padding:1.25rem 1.5rem;display:none;margin-top:1.25rem;position:relative;overflow:hidden;}
+.score-bar.show{display:flex;align-items:center;gap:1.25rem;flex-wrap:wrap;animation:scoreReveal 0.5s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes scoreReveal{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:none;}}
+.score-bar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.4),transparent);}
+.score-big{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;background:linear-gradient(135deg,var(--lime),#a8d428);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;}
+.score-info{flex:1;}
+.score-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:'Syne',sans-serif;}
+.score-label{font-size:12px;color:var(--text-3);}
+/* Study Plan */
+.plan-intro{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:1.75rem;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);border-left:3px solid var(--lime);}
+.week-list{display:flex;flex-direction:column;gap:16px;}
+.week-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color 0.2s;}
+.week-card:hover{border-color:var(--border-bright);}
+.week-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);}
+.week-pill{font-size:10px;font-weight:700;letter-spacing:0.08em;padding:4px 10px;border-radius:20px;font-family:'Syne',sans-serif;flex-shrink:0;}
+.week-pill.lime{background:var(--lime-dim);color:var(--lime);border:1px solid rgba(200,241,53,0.25);}
+.week-pill.purple{background:var(--purple-dim);color:#a78bfa;border:1px solid rgba(139,92,246,0.25);}
+.week-pill.blue{background:rgba(59,130,246,0.1);color:#60a5fa;border:1px solid rgba(59,130,246,0.25);}
+.week-head-text{flex:1;min-width:0;}
+.week-title{font-size:14px;font-weight:700;color:var(--text);font-family:'Syne',sans-serif;letter-spacing:-0.2px;}
+.week-goal{font-size:12px;color:var(--text-3);margin-top:3px;line-height:1.5;}
+.week-days{padding:6px 0;}
+.day-row{display:flex;gap:0;align-items:stretch;padding:0 18px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.day-row:last-child{border-bottom:none;}
+.day-label-col{width:72px;flex-shrink:0;padding:12px 12px 12px 0;display:flex;align-items:flex-start;}
+.day-label{font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:0.05em;font-family:'Syne',sans-serif;white-space:nowrap;padding-top:2px;}
+.day-divider{width:1px;background:var(--border);flex-shrink:0;margin:8px 0;}
+.day-task-col{flex:1;padding:12px 0 12px 16px;}
+.day-task{font-size:13px;color:var(--text-2);line-height:1.7;}
+.next-vid{margin-top:1.75rem;padding:1rem 1.25rem;border:1px solid var(--border);border-radius:var(--r-lg);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--surface);transition:all 0.2s;}
+.next-vid:hover{border-color:var(--border-bright);}
+.next-vid-label{font-size:10px;font-weight:700;color:var(--text-3);letter-spacing:0.08em;margin-bottom:3px;font-family:'Syne',sans-serif;}
+.next-vid-title{font-size:13px;font-weight:600;color:var(--text);}
+.next-vid-btn{background:var(--lime);color:#0a0a0a;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;white-space:nowrap;text-decoration:none;display:inline-block;font-family:'Syne',sans-serif;transition:all 0.2s;}
+.next-vid-btn:hover{background:#d4f750;transform:translateY(-1px);}
+.reset-row{text-align:center;margin-top:1rem;}
+.reset-btn{background:none;border:1px solid var(--border);color:var(--text-3);font-size:13px;font-weight:500;padding:10px 22px;border-radius:var(--r);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.reset-btn:hover{border-color:var(--border-bright);color:var(--text-2);}
+/* Library */
+.library-section{max-width:820px;margin:0 auto;padding:0 2rem 5rem;display:none;}
+.library-section.show{display:block;}
+.lib-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;}
+.lib-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;}
+.lib-clear{background:none;border:1px solid var(--border);color:var(--text-3);font-size:12px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
+.lib-clear:hover{border-color:rgba(239,68,68,0.4);color:var(--red);}
+.lib-empty{text-align:center;padding:4rem 2rem;color:var(--text-3);font-size:14px;line-height:1.7;}
+.lib-empty-icon{font-size:40px;margin-bottom:1rem;opacity:0.4;}
+.lib-grid{display:flex;flex-direction:column;gap:12px;}
+.lib-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;display:flex;align-items:center;gap:14px;transition:all 0.2s;cursor:pointer;position:relative;overflow:hidden;}
+.lib-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border-bright),transparent);}
+.lib-card:hover{border-color:var(--border-bright);background:rgba(255,255,255,0.05);transform:translateY(-1px);}
+.lib-thumb{width:72px;height:48px;border-radius:8px;background:rgba(255,255,255,0.05);border:1px solid var(--border);overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;}
+.lib-thumb img{width:100%;height:100%;object-fit:cover;}
+.lib-info{flex:1;min-width:0;}
+.lib-video-title{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lib-meta{font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.lib-score{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.lib-score.good{background:var(--green-dim);color:var(--green);}
+.lib-score.mid{background:rgba(251,191,36,0.1);color:#fbbf24;}
+.lib-score.low{background:var(--red-dim);color:var(--red);}
+.lib-score.none{background:var(--surface-2);color:var(--text-3);}
+.lib-actions{display:flex;gap:6px;flex-shrink:0;}
+.lib-action-btn{background:var(--surface);border:1px solid var(--border);color:var(--text-3);font-size:11px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;white-space:nowrap;}
+.lib-action-btn:hover{border-color:var(--border-bright);color:var(--text);}
+.lib-action-btn.del:hover{border-color:rgba(239,68,68,0.4);color:var(--red);}
+.lib-action-btn.pdf-btn{border-color:rgba(139,92,246,0.3);color:#a78bfa;}
+.lib-action-btn.pdf-btn:hover{background:var(--purple-dim);}
+/* How it works */
+.how-section{background:rgba(255,255,255,0.02);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2rem;margin-top:2rem;}
+.how-inner{max-width:860px;margin:0 auto;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--lime);margin-bottom:1rem;font-family:'Syne',sans-serif;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:3.5rem;line-height:1.15;}
+.section-title .dim{color:var(--text-3);}
+.how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
+.how-item{background:var(--bg);padding:2rem;transition:background 0.2s;}
+.how-item:hover{background:rgba(255,255,255,0.03);}
+.how-num{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--text-3);letter-spacing:0.1em;margin-bottom:1.25rem;}
+.how-icon-wrap{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1rem;}
+.how-icon-wrap.c-lime{background:var(--lime-dim);}
+.how-icon-wrap.c-purple{background:var(--purple-dim);}
+.how-icon-wrap.c-blue{background:rgba(59,130,246,0.12);}
+.how-icon-wrap.c-green{background:var(--green-dim);}
+.how-item-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.how-item-desc{font-size:13px;color:var(--text-3);line-height:1.65;}
+/* Proof */
+.proof-section{max-width:860px;margin:0 auto;padding:5rem 2rem;}
+.proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
+.proof-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;transition:all 0.25s;position:relative;overflow:hidden;}
+.proof-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border-bright),transparent);}
+.proof-card:hover{border-color:var(--border-bright);background:rgba(255,255,255,0.05);transform:translateY(-2px);}
+.proof-stars{color:var(--lime);font-size:13px;margin-bottom:12px;letter-spacing:2px;}
+.proof-text{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:1rem;}
+.proof-author-row{display:flex;align-items:center;gap:10px;}
+.proof-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;flex-shrink:0;}
+.proof-author{font-size:12px;font-weight:600;color:var(--text);}
+.proof-role{font-size:11px;color:var(--text-3);}
+footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;background:linear-gradient(135deg,#fff,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
+.footer-sub{font-size:12px;color:var(--text-3);}
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,28,0.95);backdrop-filter:blur(20px);border:1px solid var(--border-bright);border-radius:var(--r);padding:10px 20px;font-size:13px;color:var(--text);z-index:300;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+@media(max-width:600px){
+  nav{padding:0 1.25rem;}
+  .hero{padding:5rem 1.25rem 3rem;}
+  main,.library-section{padding:0 1.25rem 4rem;}
+  .input-row{flex-direction:column;}
+  .how-section,.proof-section{padding:3.5rem 1.25rem;}
+  .stats-strip{flex-direction:column;}
+  .stat-item{border-right:none;border-bottom:1px solid var(--border);}
+  .stat-item:last-child{border-bottom:none;}
+  .lib-actions{flex-direction:column;}
+  .step-pill span:not(.step-num){display:none;}
+}
+</style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loader-ring"></div>
+  <div class="loader-dots"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+  <div class="loading-text-big" id="loadingText">Reading your video…</div>
+  <div class="loading-step-sm" id="loadingStep">Fetching video details</div>
+  <div class="loading-progress-wrap"><div class="loading-bar" id="loadingBar"></div></div>
+</div>
+<div class="toast" id="toast"></div>
+<nav>
+  <div class="nav-logo">FSTR</div>
+  <div class="nav-right">
+    <span class="nav-badge">BETA</span>
+    <button class="nav-lib-btn" onclick="toggleLibrary()">📚 Library <span class="lib-count" id="libCount">0</span></button>
+    <button class="nav-cta" onclick="scrollToDemo()">Try it free →</button>
+  </div>
+</nav>
+<div class="hero" id="heroSection">
+  <div class="hero-eyebrow"><span class="eyebrow-dot"></span>For students who actually want to learn</div>
+  <h1><span class="grad">Watch less.</span><br><span class="lime-text">Remember more.</span></h1>
+  <p class="hero-sub">Paste any YouTube link. FSTR extracts what matters, quizzes you on it, and builds your personal study plan. Save everything to your library.</p>
+  <div class="hero-cta-row">
+    <button class="btn-hero" onclick="scrollToDemo()"><span>Try it now</span><span>→</span></button>
+    <button class="btn-ghost" onclick="document.querySelector('.how-section').scrollIntoView({behavior:'smooth'})">How it works</button>
+  </div>
+  <div class="stats-strip">
+    <div class="stat-item"><div class="stat-num" id="statSec">0s</div><div class="stat-label">TO ANALYSE</div></div>
+    <div class="stat-item"><div class="stat-num">7</div><div class="stat-label">KEY CONCEPTS</div></div>
+    <div class="stat-item"><div class="stat-num" id="statSaved">0</div><div class="stat-label">VIDEOS SAVED</div></div>
+  </div>
+</div>
+<main id="demoArea">
+  <div class="steps-row" id="stepsRow">
+    <div class="step-pill active" id="step1"><span class="step-num">1</span><span>Paste link</span></div>
+    <div class="step-pill" id="step2"><span class="step-num">2</span><span>AI reads it</span></div>
+    <div class="step-pill" id="step3"><span class="step-num">3</span><span>Quiz yourself</span></div>
+    <div class="step-pill" id="step4"><span class="step-num">4</span><span>Save it</span></div>
+  </div>
+  <div class="demo-label">PASTE ANY YOUTUBE LINK</div>
+  <div class="input-card">
+    <div class="input-row">
+      <input class="url-input" type="url" id="urlInput" placeholder="https://youtube.com/watch?v=..." maxlength="300" autocomplete="off" spellcheck="false" oninput="onUrlInput()" onkeydown="if(event.key==='Enter'&&!document.getElementById('goBtn').disabled)analyse()"/>
+      <button class="go-btn" id="goBtn" onclick="analyse()" disabled>
+        <span id="goBtnText">Analyse</span><span id="goBtnArrow">→</span>
+      </button>
+    </div>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="input-hint">Works with any educational YouTube video · Free · No sign up needed</div>
+  </div>
+  <div id="resultSection" style="display:none;">
+    <div class="result-card">
+      <div class="video-meta">
+        <div class="video-thumb" id="thumbWrap">
+          <img id="thumbImg" src="" alt="" style="display:none;" onerror="this.style.display='none';document.getElementById('thumbFallback').style.display='block'"/>
+          <span id="thumbFallback">▶</span>
+        </div>
+        <div class="video-info">
+          <div class="video-title" id="videoTitle">—</div>
+          <div class="video-channel" id="videoChannel">—</div>
+          <div class="video-badge">✓ Analysed</div>
+          <div class="result-actions">
+            <button class="action-btn save" id="saveBtn" onclick="saveToLibrary()">📚 Save to Library</button>
+            <button class="action-btn pdf" onclick="exportPDF()">📄 Export PDF</button>
+          </div>
+        </div>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('breakdown',this)">🧠 Breakdown</button>
+        <button class="tab" onclick="switchTab('quiz',this)">✏️ Quiz</button>
+        <button class="tab" onclick="switchTab('plan',this)">📈 Study Plan</button>
+      </div>
+      <div class="tab-panel active" id="panel-breakdown">
+        <div class="tldr-box"><div class="tldr-label">TL;DR</div><div class="tldr-text" id="tldrText"></div></div>
+        <div class="section-head">KEY CONCEPTS</div>
+        <div class="concept-list" id="conceptList"></div>
+      </div>
+      <div class="tab-panel" id="panel-quiz">
+        <p class="quiz-intro">Answer all questions — your score tells you exactly how much actually stuck.</p>
+        <div class="quiz-questions" id="quizQuestions"></div>
+        <button class="quiz-submit" id="quizSubmit" onclick="submitQuiz()" disabled>Submit answers</button>
+        <div class="score-bar" id="scoreBar">
+          <div class="score-big" id="scoreNum"></div>
+          <div class="score-info"><div class="score-title" id="scoreTitle"></div><div class="score-label" id="scoreLabel"></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="panel-plan">
+        <p class="plan-intro" id="planIntro"></p>
+        <div class="week-list" id="weekList"></div>
+        <div class="next-vid" id="nextVid" style="display:none;">
+          <div><div class="next-vid-label">WATCH NEXT</div><div class="next-vid-title" id="nextVidTitle"></div></div>
+          <a class="next-vid-btn" id="nextVidLink" href="#" target="_blank" rel="noopener noreferrer">Find on YouTube →</a>
+        </div>
+      </div>
+    </div>
+    <div class="reset-row"><button class="reset-btn" onclick="resetAll()">← Analyse another video</button></div>
+  </div>
+</main>
+<div class="library-section" id="librarySection">
+  <div class="lib-header"><div class="lib-title">📚 Your Library</div><button class="lib-clear" onclick="clearLibrary()">Clear all</button></div>
+  <div id="libContent"></div>
+</div>
+<div class="how-section">
+  <div class="how-inner">
+    <div class="section-eyebrow">HOW IT WORKS</div>
+    <div class="section-title">From video to knowledge<br><span class="dim">in four steps.</span></div>
+    <div class="how-grid">
+      <div class="how-item"><div class="how-num">01</div><div class="how-icon-wrap c-lime">🔗</div><div class="how-item-title">Paste any video</div><div class="how-item-desc">Drop in a YouTube link. Coding, finance, science, history, design — any topic, any creator.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-icon-wrap c-purple">🧠</div><div class="how-item-title">AI extracts the signal</div><div class="how-item-desc">No generic summaries. FSTR pulls the actual concepts and cuts the filler.</div></div>
+      <div class="how-item"><div class="how-num">03</div><div class="how-icon-wrap c-blue">✏️</div><div class="how-item-title">Quiz yourself</div><div class="how-item-desc">5 questions built from the actual video — exposing exactly what you missed.</div></div>
+      <div class="how-item"><div class="how-num">04</div><div class="how-icon-wrap c-green">📚</div><div class="how-item-title">Save & export</div><div class="how-item-desc">Save to your library and export a full PDF of the breakdown, quiz, and study plan.</div></div>
+    </div>
+  </div>
+</div>
+<div class="proof-section">
+  <div class="section-eyebrow">EARLY USERS</div>
+  <div class="section-title">What people are saying<br><span class="dim">about FSTR.</span></div>
+  <div class="proof-grid">
+    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"I watched a 45-minute ML video and forgot most of it by Monday. FSTR's quiz showed I'd only understood 3 of 7 concepts. That honest feedback was exactly what I needed."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(139,92,246,0.2);color:#a78bfa;">A</div><div><div class="proof-author">Arjun K.</div><div class="proof-role">JEE aspirant, 17</div></div></div></div>
+    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"The library feature is a game changer. I can see everything I've learned, my scores, and go back to any study plan whenever I want."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(200,241,53,0.12);color:var(--lime);">P</div><div><div class="proof-author">Priya M.</div><div class="proof-role">B.Tech first year, 19</div></div></div></div>
+    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"The PDF export is brilliant. I print my study plans and stick them on my wall. It's like having a personal tutor for every video I watch."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(59,130,246,0.15);color:#60a5fa;">R</div><div><div class="proof-author">Riya S.</div><div class="proof-role">Learning UI/UX, 16</div></div></div></div>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">FSTR</div>
+  <div class="footer-sub">Powered by Google Gemini · Library saved to your device · Free to use</div>
+</footer>
+<script>
+const{jsPDF}=window.jspdf;
+let quizAnswered={},quizCorrect={},currentVid=null,currentData=null,quizScore=null;
+window._fstrQuiz=[];
+let libraryVisible=false;
+const LIB_KEY='fstr_library';
+
+// ── Library ────────────────────────────────────────────────────────────────
+function getLibrary(){try{return JSON.parse(localStorage.getItem(LIB_KEY)||'[]');}catch{return[];}}
+function saveLibrary(lib){try{localStorage.setItem(LIB_KEY,JSON.stringify(lib));}catch{showToast('⚠️ Storage full');}}
+function updateLibCount(){const n=getLibrary().length;document.getElementById('libCount').textContent=n;document.getElementById('statSaved').textContent=n;}
+
+function saveToLibrary(){
+  if(!currentData)return;
+  const lib=getLibrary();
+  if(lib.find(e=>e.videoTitle===currentData.videoTitle)){showToast('Already in your library!');return;}
+  lib.unshift({id:Date.now().toString(),videoId:currentVid,videoTitle:currentData.videoTitle,channelName:currentData.channelName,savedAt:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),score:quizScore,data:currentData});
+  saveLibrary(lib);updateLibCount();renderLibrary();
+  const btn=document.getElementById('saveBtn');
+  btn.textContent='✓ Saved';btn.className='action-btn saved';btn.onclick=null;
+  showToast('📚 Saved to your library!');setStep(4);
+}
+
+function deleteFromLibrary(id){saveLibrary(getLibrary().filter(e=>e.id!==id));updateLibCount();renderLibrary();showToast('Removed from library');}
+function clearLibrary(){if(!confirm('Clear your entire library? This cannot be undone.'))return;localStorage.removeItem(LIB_KEY);updateLibCount();renderLibrary();showToast('Library cleared');}
+
+function toggleLibrary(){
+  libraryVisible=!libraryVisible;
+  const sec=document.getElementById('librarySection');
+  sec.classList.toggle('show',libraryVisible);
+  if(libraryVisible){renderLibrary();sec.scrollIntoView({behavior:'smooth'});}
+}
+
+function renderLibrary(){
+  const lib=getLibrary(),container=document.getElementById('libContent');
+  if(!lib.length){container.innerHTML=`<div class="lib-empty"><div class="lib-empty-icon">📚</div><div>Your library is empty.</div><div style="margin-top:8px;font-size:13px;">Analyse a video and hit "Save to Library" to keep it here.</div></div>`;return;}
+  container.innerHTML=`<div class="lib-grid">${lib.map(entry=>{
+    const scoreHTML=entry.score!==null&&entry.score!==undefined?`<span class="lib-score ${entry.score>=4?'good':entry.score>=3?'mid':'low'}">${entry.score}/5 on quiz</span>`:`<span class="lib-score none">Quiz not taken</span>`;
+    const thumbSrc=entry.videoId?`https://img.youtube.com/vi/${entry.videoId}/mqdefault.jpg`:'';
+    return `<div class="lib-card" onclick="loadFromLibrary('${entry.id}')"><div class="lib-thumb">${thumbSrc?`<img src="${thumbSrc}" alt="" onerror="this.style.display='none'"/>`:'▶'}</div><div class="lib-info"><div class="lib-video-title">${esc(entry.videoTitle)}</div><div class="lib-meta"><span>${esc(entry.channelName||'')}</span><span>Saved ${entry.savedAt}</span>${scoreHTML}</div></div><div class="lib-actions" onclick="event.stopPropagation()"><button class="lib-action-btn pdf-btn" onclick="exportPDFFromEntry('${entry.id}')">📄 PDF</button><button class="lib-action-btn del" onclick="deleteFromLibrary('${entry.id}')">✕</button></div></div>`;
+  }).join('')}</div>`;
+}
+
+function loadFromLibrary(id){
+  const entry=getLibrary().find(e=>e.id===id);if(!entry)return;
+  currentVid=entry.videoId;currentData=entry.data;quizScore=entry.score;
+  quizAnswered={};quizCorrect={};window._fstrQuiz=[];
+  renderResult(entry.data,true);
+  libraryVisible=false;document.getElementById('librarySection').classList.remove('show');
+  document.getElementById('demoArea').scrollIntoView({behavior:'smooth'});
+  showToast('Loaded from library');
+}
+
+// ── Scroll / helpers ────────────────────────────────────────────────────────
+function scrollToDemo(){document.getElementById('demoArea').scrollIntoView({behavior:'smooth'});}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
+function setStep(n){for(let i=1;i<=4;i++){const el=document.getElementById('step'+i);el.classList.remove('active','done');if(i<n)el.classList.add('done');if(i===n)el.classList.add('active');}}
+function showError(msg){const el=document.getElementById('errorMsg');el.textContent=msg;el.classList.add('show');}
+function hideError(){document.getElementById('errorMsg').classList.remove('show');}
+function resetBtn(){document.getElementById('goBtn').disabled=false;document.getElementById('goBtnText').textContent='Analyse';document.getElementById('goBtnArrow').textContent='→';}
+
+// ── Input ───────────────────────────────────────────────────────────────────
+function onUrlInput(){
+  const url=document.getElementById('urlInput').value.trim();
+  document.getElementById('goBtn').disabled=!(url.includes('youtube.com')||url.includes('youtu.be'));
+  hideError();
+}
+
+// ── Loading ─────────────────────────────────────────────────────────────────
+const STEPS=[['Reading your video…','Fetching video details'],['Extracting concepts…','Finding what actually matters'],['Building your quiz…','Generating personalised questions'],['Creating study plan…','Mapping your learning path']];
+let progressTimer,stepTimer;
+
+function showLoading(){
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('loadingBar').style.width='0%';
+  let pv=0,si=0;setLS(0);
+  progressTimer=setInterval(()=>{pv=pv<88?pv+(88-pv)*0.035:pv;document.getElementById('loadingBar').style.width=pv+'%';},100);
+  stepTimer=setInterval(()=>{si=Math.min(si+1,STEPS.length-1);setLS(si);},2600);
+}
+function setLS(i){document.getElementById('loadingText').textContent=STEPS[i][0];document.getElementById('loadingStep').textContent=STEPS[i][1];}
+function hideLoading(){
+  clearInterval(progressTimer);clearInterval(stepTimer);
+  document.getElementById('loadingBar').style.width='100%';
+  setTimeout(()=>{document.getElementById('loadingOverlay').classList.remove('show');document.getElementById('loadingBar').style.width='0%';},350);
+}
+
+// ── Analyse — calls real backend ────────────────────────────────────────────
+async function analyse(){
+  const url=document.getElementById('urlInput').value.trim();
+  if(!url)return;
+  hideError();
+  try{const u=new URL(url);currentVid=u.hostname==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v');}catch{currentVid=null;}
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('goBtn').disabled=true;
+  document.getElementById('goBtnText').textContent='Analysing';
+  document.getElementById('goBtnArrow').textContent='…';
+  setStep(2);showLoading();quizScore=null;
+
+  try{
+    const res=await fetch('/api/analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
+    clearInterval(progressTimer);clearInterval(stepTimer);
+    const data=await res.json();
+    if(!res.ok){hideLoading();showError(data.error||'Something went wrong. Please try again.');resetBtn();return;}
+    currentData=data;
+    setTimeout(()=>{hideLoading();setTimeout(()=>{renderResult(data,false);setStep(3);},400);},400);
+  }catch(err){
+    clearInterval(progressTimer);clearInterval(stepTimer);
+    hideLoading();showError('Could not connect to the server. Check your internet and try again.');resetBtn();
+  }
+}
+
+// ── Render ──────────────────────────────────────────────────────────────────
+function renderResult(d,fromLib){
+  document.getElementById('videoTitle').textContent=d.videoTitle||'YouTube Video';
+  document.getElementById('videoChannel').textContent=d.channelName||'';
+  if(currentVid){const img=document.getElementById('thumbImg');img.src=`https://img.youtube.com/vi/${currentVid}/mqdefault.jpg`;img.style.display='block';document.getElementById('thumbFallback').style.display='none';}
+  document.getElementById('tldrText').textContent=d.tldr||'';
+
+  // Concepts
+  document.getElementById('conceptList').innerHTML=(d.concepts||[]).map((c,i)=>`
+    <div class="concept-item" style="animation:conceptIn 0.4s ${i*0.07}s ease both">
+      <div class="concept-num">${i+1}</div>
+      <div class="concept-text"><strong>${esc(c.title)}</strong>${esc(c.explanation)}</div>
+    </div>`).join('');
+
+  // Quiz
+  quizAnswered={};quizCorrect={};window._fstrQuiz=d.quiz||[];
+  document.getElementById('quizQuestions').innerHTML=(d.quiz||[]).map((q,i)=>`
+    <div class="q-item" id="qi${i}" style="animation:conceptIn 0.4s ${i*0.07}s ease both">
+      <div class="q-num">QUESTION ${i+1} OF ${d.quiz.length}</div>
+      <div class="q-text">${esc(q.question)}</div>
+      <div class="q-options">${(q.options||[]).map((opt,j)=>`
+        <label class="q-option" id="qo${i}_${j}" onclick="selectOpt(${i},${j},${q.correct})">
+          <input type="radio" name="q${i}" value="${j}"/>${esc(opt)}
+        </label>`).join('')}</div>
+      <div class="q-feedback" id="qf${i}"></div>
+    </div>`).join('');
+  document.getElementById('quizSubmit').disabled=true;
+  document.getElementById('quizSubmit').textContent='Submit answers';
+  document.getElementById('scoreBar').classList.remove('show');
+
+  // Study plan
+  document.getElementById('planIntro').textContent=d.studyPlan?.intro||'';
+  const pillClass=['lime','purple','blue'];
+  document.getElementById('weekList').innerHTML=(d.studyPlan?.weeks||[]).map((w,i)=>{
+    const days=(w.days||[]).map(day=>`
+      <div class="day-row">
+        <div class="day-label-col"><span class="day-label">${esc(day.label)}</span></div>
+        <div class="day-divider"></div>
+        <div class="day-task-col"><div class="day-task">${esc(day.task)}</div></div>
+      </div>`).join('');
+    return `<div class="week-card" style="animation:conceptIn 0.4s ${i*0.1}s ease both">
+      <div class="week-head">
+        <span class="week-pill ${pillClass[i]||'lime'}">${esc(w.week).toUpperCase()}</span>
+        <div class="week-head-text">
+          <div class="week-title">${esc(w.title)}</div>
+          ${w.goal?`<div class="week-goal">${esc(w.goal)}</div>`:''}
+        </div>
+      </div>
+      <div class="week-days">${days}</div>
+    </div>`;
+  }).join('');
+
+  if(d.studyPlan?.nextVideo){
+    document.getElementById('nextVidTitle').textContent=d.studyPlan.nextVideo;
+    document.getElementById('nextVidLink').href='https://www.youtube.com/results?search_query='+encodeURIComponent(d.studyPlan.nextVideo);
+    document.getElementById('nextVid').style.display='flex';
+  }else{document.getElementById('nextVid').style.display='none';}
+
+  // Save button state
+  const saveBtn=document.getElementById('saveBtn');
+  const alreadySaved=getLibrary().some(e=>e.videoTitle===d.videoTitle);
+  if(alreadySaved||fromLib){saveBtn.textContent='✓ Saved';saveBtn.className='action-btn saved';saveBtn.onclick=null;}
+  else{saveBtn.textContent='📚 Save to Library';saveBtn.className='action-btn save';saveBtn.onclick=saveToLibrary;}
+
+  // Reset tabs
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelector('.tab').classList.add('active');
+  document.getElementById('panel-breakdown').classList.add('active');
+
+  document.getElementById('resultSection').style.display='block';
+  resetBtn();
+  setTimeout(()=>document.getElementById('resultSection').scrollIntoView({behavior:'smooth',block:'start'}),120);
+  if(!fromLib)showToast('✓ Analysis complete');
+}
+
+// ── Quiz ────────────────────────────────────────────────────────────────────
+function selectOpt(qIdx,optIdx,correct){
+  if(quizAnswered[qIdx]!==undefined)return;
+  quizAnswered[qIdx]=optIdx;const ok=optIdx===correct;quizCorrect[qIdx]=ok;
+  const exp=window._fstrQuiz?.[qIdx]?.explanation||'';
+  document.querySelectorAll(`[id^="qo${qIdx}_"]`).forEach(o=>o.classList.add('disabled'));
+  document.getElementById(`qo${qIdx}_${optIdx}`)?.classList.add(ok?'selected-correct':'selected-wrong');
+  if(!ok)document.getElementById(`qo${qIdx}_${correct}`)?.classList.add('show-correct');
+  const fb=document.getElementById(`qf${qIdx}`);
+  fb.textContent=(ok?'✓ Correct — ':'✗ Not quite — ')+exp;
+  fb.className='q-feedback show '+(ok?'ok':'no');
+  document.getElementById(`qi${qIdx}`)?.classList.add(ok?'correct':'wrong');
+  if(Object.keys(quizAnswered).length===(window._fstrQuiz?.length||5))
+    document.getElementById('quizSubmit').disabled=false;
+}
+
+function submitQuiz(){
+  const total=window._fstrQuiz?.length||5,score=Object.values(quizCorrect).filter(Boolean).length;
+  quizScore=score;const pct=Math.round((score/total)*100);
+  const results=[[100,'Perfect score.','You completely understood this video.'],[80,'Strong result.','One concept needs a second look — check the feedback above.'],[60,'Getting there.','Re-read the breakdown tab and try again.'],[40,'Needs work.',"The video didn't fully stick. Re-watch with the breakdown open."],[0,'Start over.','Go back to the video — start with the TL;DR first.']];
+  const[,title,label]=results.find(([t])=>pct>=t);
+  document.getElementById('scoreNum').textContent=`${score}/${total}`;
+  document.getElementById('scoreTitle').textContent=title;
+  document.getElementById('scoreLabel').textContent=label;
+  document.getElementById('scoreBar').classList.add('show');
+  document.getElementById('quizSubmit').disabled=true;
+  document.getElementById('quizSubmit').textContent='✓ Submitted';
+  setStep(4);showToast(pct===100?'🎉 Perfect score!':`You scored ${score}/${total}`);
+  const lib=getLibrary(),idx=lib.findIndex(e=>e.videoTitle===currentData?.videoTitle);
+  if(idx!==-1){lib[idx].score=score;saveLibrary(lib);renderLibrary();}
+}
+
+function switchTab(name,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+function resetAll(){
+  document.getElementById('resultSection').style.display='none';
+  document.getElementById('urlInput').value='';
+  document.getElementById('quizSubmit').disabled=true;
+  document.getElementById('quizSubmit').textContent='Submit answers';
+  document.getElementById('scoreBar').classList.remove('show');
+  document.getElementById('loadingBar').style.width='0%';
+  quizAnswered={};quizCorrect={};window._fstrQuiz=[];currentVid=null;currentData=null;quizScore=null;
+  setStep(1);hideError();resetBtn();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── PDF Export ──────────────────────────────────────────────────────────────
+function exportPDF(data,score){
+  const d=data||currentData;if(!d){showToast('No analysis to export');return;}
+  const sc=score!==undefined?score:quizScore;
+  showToast('📄 Generating PDF…');
+  const doc=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
+  const margin=18,contentW=W-margin*2;let y=margin;
+
+  function checkPage(need=12){
+    if(y+need>H-margin){
+      doc.addPage();y=margin;
+      doc.setFillColor(12,12,18);doc.rect(0,0,W,10,'F');
+      doc.setFontSize(8);doc.setTextColor(200,241,53);doc.setFont('helvetica','bold');
+      doc.text('FSTR',margin,7);
+      doc.setTextColor(120,120,140);doc.setFont('helvetica','normal');
+      doc.text((d.videoTitle||'').substring(0,55),W-margin,7,{align:'right'});
+      y=16;
+    }
+  }
+
+  // Cover
+  doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');
+  doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
+  doc.setFontSize(28);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('FSTR',margin,30);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(150,150,165);doc.text('Learn Faster from YouTube',margin,38);
+  doc.setDrawColor(50,50,65);doc.setLineWidth(0.3);doc.line(margin,46,W-margin,46);
+  doc.setFontSize(18);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);
+  const titleLines=doc.splitTextToSize(d.videoTitle||'Video Analysis',contentW);
+  doc.text(titleLines,margin,58);y=58+titleLines.length*8;
+  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(150,150,165);
+  doc.text(d.channelName||'',margin,y+6);y+=6;
+  if(sc!==null&&sc!==undefined){
+    const pct=Math.round((sc/5)*100);
+    const cr=pct>=80?[16,185,129]:pct>=60?[251,191,36]:[239,68,68];
+    doc.setFillColor(cr[0],cr[1],cr[2]);doc.roundedRect(margin,y+10,44,9,2,2,'F');
+    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);
+    doc.text(`Quiz Score: ${sc} / ${window._fstrQuiz?.length||5} (${pct}%)`,margin+22,y+15.5,{align:'center'});y+=22;
+  }else{y+=14;}
+  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(100,100,120);
+  doc.text(`Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}`,margin,y+8);y+=8;
+  y+=16;doc.setFillColor(25,25,38);doc.roundedRect(margin,y,contentW,38,3,3,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('CONTENTS',margin+8,y+8);
+  doc.setTextColor(200,200,215);doc.setFont('helvetica','normal');
+  doc.text('01  TL;DR & Key Concepts',margin+8,y+16);
+  doc.text('02  Quiz Questions & Answers',margin+8,y+24);
+  doc.text('03  3-Week Study Plan',margin+8,y+32);
+
+  // Page 2: Breakdown
+  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
+  y=margin;
+  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('01',margin+10,y+5,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('Breakdown',margin+24,y+5.5);y+=16;
+  doc.setFillColor(25,35,18);doc.roundedRect(margin,y,contentW,8,1,1,'F');
+  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('TL;DR',margin+4,y+5.2);y+=12;
+  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(200,200,215);
+  const tldrLines=doc.splitTextToSize(d.tldr||'',contentW);checkPage(tldrLines.length*5+4);
+  doc.text(tldrLines,margin,y);y+=tldrLines.length*5+8;
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(150,150,165);doc.text('KEY CONCEPTS',margin,y);y+=6;
+  (d.concepts||[]).forEach((c,i)=>{
+    const expLines=doc.splitTextToSize(c.explanation||'',contentW-18);
+    const titleL=doc.splitTextToSize(c.title||'',contentW-18);
+    const blockH=titleL.length*5.5+expLines.length*4.8+16;checkPage(blockH+6);
+    doc.setFillColor(22,22,34);doc.roundedRect(margin,y,contentW,blockH,2,2,'F');
+    doc.setFillColor(139,92,246);doc.ellipse(margin+7,y+7,4,4,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);doc.text(String(i+1),margin+7,y+9.2,{align:'center'});
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(titleL,margin+15,y+8);
+    doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(175,175,200);doc.text(expLines,margin+15,y+8+titleL.length*5.5+1);
+    y+=blockH+5;
+  });
+
+  // Page 3: Quiz
+  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
+  y=margin;
+  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('02',margin+10,y+5,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('Quiz Questions & Answers',margin+24,y+5.5);y+=16;
+  if(sc!==null&&sc!==undefined){
+    const pct2=Math.round((sc/5)*100);
+    doc.setFillColor(25,38,30);doc.roundedRect(margin,y,contentW,10,2,2,'F');
+    doc.setFontSize(10);doc.setFont('helvetica','bold');
+    if(pct2>=80)doc.setTextColor(16,185,129);else if(pct2>=60)doc.setTextColor(251,191,36);else doc.setTextColor(239,68,68);
+    doc.text(`Your Score: ${sc}/${window._fstrQuiz?.length||5} — ${pct2}%`,margin+4,y+6.5);y+=16;
+  }
+  (d.quiz||[]).forEach((q,i)=>{
+    const qLines=doc.splitTextToSize(`${i+1}. ${q.question||''}`,contentW-6);
+    const expLines2=doc.splitTextToSize(q.explanation||'',contentW-10);
+    const opts=q.options||[];let optH=0;
+    opts.forEach(opt=>{optH+=doc.splitTextToSize(opt,contentW-20).length*4.5+2;});
+    const blockH=qLines.length*5.5+optH+expLines2.length*4.8+22;checkPage(blockH+8);
+    doc.setFillColor(20,20,32);doc.roundedRect(margin,y,contentW,blockH,2,2,'F');
+    doc.setFontSize(9.5);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(qLines,margin+4,y+8);
+    let oy=y+8+qLines.length*5.5+3;
+    opts.forEach((opt,j)=>{
+      const isC=j===q.correct,oLines=doc.splitTextToSize(opt,contentW-20);
+      if(isC){doc.setFillColor(16,185,129);doc.ellipse(margin+8,oy+2,2.5,2.5,'F');doc.setTextColor(16,185,129);doc.setFont('helvetica','bold');}
+      else{doc.setDrawColor(60,60,80);doc.ellipse(margin+8,oy+2,2.5,2.5,'S');doc.setTextColor(150,150,170);doc.setFont('helvetica','normal');}
+      doc.setFontSize(8.5);doc.text(oLines,margin+14,oy+4);oy+=oLines.length*4.5+2;
+    });
+    oy+=3;doc.setFillColor(14,30,20);doc.roundedRect(margin+4,oy,contentW-8,expLines2.length*4.5+8,1,1,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','italic');doc.setTextColor(120,190,145);doc.text(expLines2,margin+8,oy+6);
+    y+=blockH+6;
+  });
+
+  // Page 4: Study Plan
+  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
+  y=margin;
+  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
+  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('03',margin+10,y+5,{align:'center'});
+  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('3-Week Study Plan',margin+24,y+5.5);y+=16;
+  if(d.studyPlan?.intro){
+    const iLines=doc.splitTextToSize(d.studyPlan.intro,contentW);
+    doc.setFillColor(18,28,18);doc.roundedRect(margin,y,contentW,iLines.length*4.8+10,2,2,'F');
+    doc.setDrawColor(200,241,53);doc.setLineWidth(2);doc.line(margin,y,margin,y+iLines.length*4.8+10);
+    doc.setLineWidth(0.3);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(180,200,180);doc.text(iLines,margin+6,y+7);
+    y+=iLines.length*4.8+18;
+  }
+  const weekColors=[[200,241,53],[139,92,246],[59,130,246]],weekTextColors=[[12,12,18],[255,255,255],[255,255,255]];
+  (d.studyPlan?.weeks||[]).forEach((w,i)=>{
+    const wc=weekColors[i]||weekColors[0],wtc=weekTextColors[i]||weekTextColors[0];
+    const days=w.days||[];
+    let totalDayH=0;
+    days.forEach(day=>{totalDayH+=doc.splitTextToSize(day.task||'',contentW-28).length*4.8+12;});
+    const goalLines=w.goal?doc.splitTextToSize(w.goal,contentW-40):[];
+    const blockH=totalDayH+goalLines.length*4.2+24;checkPage(blockH+10);
+    doc.setFillColor(20,20,32);doc.roundedRect(margin,y,contentW,blockH,3,3,'F');
+    doc.setFillColor(wc[0],wc[1],wc[2]);doc.roundedRect(margin,y,contentW,6,2,2,'F');
+    doc.setFillColor(wc[0],wc[1],wc[2]);doc.roundedRect(margin+6,y+10,24,7,1,1,'F');
+    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(wtc[0],wtc[1],wtc[2]);
+    doc.text((w.week||'').toUpperCase(),margin+18,y+15,{align:'center'});
+    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(w.title||'',margin+34,y+15);
+    let dy=y+22;
+    if(goalLines.length){doc.setFontSize(8);doc.setFont('helvetica','italic');doc.setTextColor(130,130,155);doc.text(goalLines,margin+6,dy);dy+=goalLines.length*4.2+4;}
+    days.forEach((day,di)=>{
+      const taskLines=doc.splitTextToSize(day.task||'',contentW-28);const rowH=taskLines.length*4.8+12;
+      doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(wc[0],wc[1],wc[2]);doc.text(day.label||'',margin+6,dy+5.5);
+      doc.setDrawColor(45,45,65);doc.setLineWidth(0.4);doc.line(margin+30,dy+2,margin+30,dy+rowH-2);
+      doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(185,185,205);doc.text(taskLines,margin+34,dy+5.5);
+      if(di<days.length-1){doc.setDrawColor(35,35,52);doc.setLineWidth(0.3);doc.line(margin+4,dy+rowH,margin+contentW-4,dy+rowH);}
+      dy+=rowH;
+    });
+    y+=blockH+8;
+  });
+  if(d.studyPlan?.nextVideo){
+    checkPage(20);y+=4;
+    doc.setFillColor(20,25,35);doc.roundedRect(margin,y,contentW,14,2,2,'F');
+    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(150,150,175);doc.text('WATCH NEXT →',margin+4,y+6);
+    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);
+    doc.text(doc.splitTextToSize(d.studyPlan.nextVideo,contentW-8)[0],margin+4,y+11.5);y+=18;
+  }
+
+  // Footer on every page
+  const totalPages=doc.internal.getNumberOfPages();
+  for(let p=1;p<=totalPages;p++){
+    doc.setPage(p);doc.setFillColor(18,18,28);doc.rect(0,H-10,W,10,'F');
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(80,80,100);
+    doc.text('fstr.app — Learn Faster from YouTube',margin,H-4);
+    doc.text(`Page ${p} of ${totalPages}`,W-margin,H-4,{align:'right'});
+  }
+  const safeName=(d.videoTitle||'fstr').replace(/[^a-zA-Z0-9\s]/g,'').trim().substring(0,40).replace(/\s+/g,'-').toLowerCase();
+  doc.save(`fstr-${safeName}.pdf`);showToast('📄 PDF downloaded!');
+}
+
+function exportPDFFromEntry(id){const e=getLibrary().find(e=>e.id===id);if(e)exportPDF(e.data,e.score);}
+
+// ── Scroll animations ───────────────────────────────────────────────────────
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.08});
+document.querySelectorAll('.how-item,.proof-card,.stat-item').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.55s ease,transform 0.55s ease';observer.observe(el);});
+let counted=false;
+const statObs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!counted){counted=true;let n=0;const t=setInterval(()=>{n++;document.getElementById('statSec').textContent=n+'s';if(n>=8)clearInterval(t);},80);}},{threshold:0.5});
+statObs.observe(document.querySelector('.stats-strip'));
+const s=document.createElement('style');
+s.textContent='@keyframes conceptIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:none;}}@keyframes resultReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}';
+document.head.appendChild(s);
+updateLibCount();
+</script>
+</body>
+</html>
