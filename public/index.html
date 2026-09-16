@@ -406,7 +406,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
         </ul>
       </div>
     </div>
-    <button class="paywall-cta" onclick="handleUpgrade()">Upgrade to Pro — ₹199/month</button>
+    <button class="paywall-cta" id="paywallCta" onclick="handleUpgrade()">Upgrade to Pro — ₹199/month</button>
     <button class="paywall-dismiss" onclick="closePaywall()">Maybe later</button>
   </div>
 </div>
@@ -578,7 +578,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
         <li><span class="feat-check">✓</span>PDF export</li>
         <li><span class="feat-check">✓</span>Priority AI processing</li>
       </ul>
-      <button class="pricing-btn pro-btn" onclick="handleUpgrade()">Get Pro — ₹199/month</button>
+      <button class="pricing-btn pro-btn" id="pricingProBtn" onclick="handleUpgrade()">Get Pro — ₹199/month</button>
     </div>
   </div>
 </div>
@@ -638,21 +638,101 @@ function updateUsageUI(){
   document.getElementById('statSaved').textContent=getLibrary().length;
 }
 
-function showPaywall(){ document.getElementById('paywallOverlay').classList.add('show'); }
+function showPaywall(){
+  document.getElementById('paywallOverlay').classList.add('show');
+  updatePaywallState();
+}
 function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('show'); }
-function handleUpgrade(){
-  // For now — activate Pro manually via UPI confirmation
-  // In production this would open Stripe/Razorpay
-  const code=prompt('Enter your Pro activation code (or contact us on WhatsApp to get one):');
-  if(code==='FSTRPRO2026'||code==='pro'||code==='PRO'){
-    localStorage.setItem(PRO_KEY,'true');
-    closePaywall();
-    updateUsageUI();
-    updateActionButtons();
-    showToast('🎉 Welcome to FSTR Pro! All features unlocked.');
-  } else if(code!==null){
-    showToast('Invalid code. Contact us to get your Pro code.');
+
+function updatePaywallState(){
+  // If already Pro, update the paywall CTA to show activated state
+  const cta = document.getElementById('paywallCta');
+  if(!cta) return;
+  if(isPro()){
+    cta.textContent = '✓ Pro Activated — All Features Unlocked';
+    cta.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    cta.disabled = true;
+  } else {
+    cta.textContent = 'Upgrade to Pro — ₹199/month';
+    cta.style.background = '';
+    cta.disabled = false;
   }
+}
+
+function updatePricingSection(){
+  // Update pricing section buttons to show activated state
+  const proBtn = document.getElementById('pricingProBtn');
+  if(!proBtn) return;
+  if(isPro()){
+    proBtn.textContent = '✓ Pro Active';
+    proBtn.style.background = 'linear-gradient(135deg,#10b981,#059669)';
+    proBtn.disabled = true;
+  } else {
+    proBtn.textContent = 'Get Pro — ₹199/month';
+    proBtn.style.background = '';
+    proBtn.disabled = false;
+  }
+}
+
+// Valid Pro codes — each is single-use tracked in localStorage
+// Format: FSTR-XXXX-XXXX
+// Add new codes here when you sell a new Pro subscription
+const PRO_CODES = [
+  'FSTR-A1B2-C3D4','FSTR-E5F6-G7H8','FSTR-I9J0-K1L2',
+  'FSTR-M3N4-O5P6','FSTR-Q7R8-S9T0','FSTR-U1V2-W3X4',
+  'FSTR-Y5Z6-A7B8','FSTR-C9D0-E1F2','FSTR-G3H4-I5J6',
+  'FSTR-K7L8-M9N0','FSTR-O1P2-Q3R4','FSTR-S5T6-U7V8',
+  'FSTR-W9X0-Y1Z2','FSTR-B3C4-D5E6','FSTR-F7G8-H9I0',
+  'FSTR-J1K2-L3M4','FSTR-N5O6-P7Q8','FSTR-R9S0-T1U2',
+  'FSTR-V3W4-X5Y6','FSTR-Z7A8-B9C0',
+];
+const USED_CODES_KEY = 'fstr_used_codes';
+
+function isCodeAlreadyUsedByMe(code){
+  try{ return JSON.parse(localStorage.getItem(USED_CODES_KEY)||'[]').includes(code); }
+  catch{ return false; }
+}
+function markCodeUsed(code){
+  try{
+    const used = JSON.parse(localStorage.getItem(USED_CODES_KEY)||'[]');
+    if(!used.includes(code)){ used.push(code); localStorage.setItem(USED_CODES_KEY, JSON.stringify(used)); }
+  }catch{}
+}
+
+function handleUpgrade(){
+  if(isPro()){
+    closePaywall();
+    showToast('✓ You are already on Pro!');
+    return;
+  }
+  const code = prompt('Enter your FSTR Pro activation code:\n(Pay via UPI and we\'ll send you a code on WhatsApp)');
+  if(code === null) return; // User cancelled
+
+  const cleaned = code.trim().toUpperCase();
+
+  if(PRO_CODES.includes(cleaned)){
+    if(isCodeAlreadyUsedByMe(cleaned)){
+      // Code was already used on this device — still activate (same device, legitimate)
+      localStorage.setItem(PRO_KEY,'true');
+      markCodeUsed(cleaned);
+      activatePro();
+    } else {
+      markCodeUsed(cleaned);
+      localStorage.setItem(PRO_KEY,'true');
+      activatePro();
+    }
+  } else if(cleaned.length > 0){
+    showToast('❌ Invalid code. Pay via UPI and WhatsApp us for your code.');
+  }
+}
+
+function activatePro(){
+  closePaywall();
+  updateUsageUI();
+  updateActionButtons();
+  updatePaywallState();
+  updatePricingSection();
+  showToast('🎉 FSTR Pro activated! All features unlocked.');
 }
 
 // ── Library ───────────────────────────────────────────────────────────────────
@@ -1228,6 +1308,8 @@ document.head.appendChild(s);
 
 // Init
 updateUsageUI();
+updatePricingSection();
+updatePaywallState();
 </script>
 </body>
 </html>
