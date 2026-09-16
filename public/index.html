@@ -681,13 +681,26 @@ function updateActionButtons(){
   const pro=isPro();
   const saveBtn=document.getElementById('saveBtn');
   const pdfBtn=document.getElementById('pdfBtn');
-  if(!pro){
+  if(!saveBtn||!pdfBtn) return; // No result currently shown
+
+  if(pro){
+    // Unlock — restore normal Pro state
+    if(!saveBtn.classList.contains('saved')){
+      saveBtn.textContent='📚 Save to Library';
+      saveBtn.className='action-btn save';
+      saveBtn.onclick=handleSaveClick;
+    }
+    pdfBtn.innerHTML='📄 Export PDF';
+    pdfBtn.className='action-btn pdf';
+    pdfBtn.onclick=handlePDFClick;
+  } else {
+    // Lock — free tier state
     if(!saveBtn.classList.contains('saved')){
       saveBtn.innerHTML='🔒 Save to Library<span class="pro-tooltip">Upgrade to Pro to save videos</span>';
-      saveBtn.classList.add('locked');
+      saveBtn.className='action-btn save locked';
     }
     pdfBtn.innerHTML='🔒 Export PDF<span class="pro-tooltip">Upgrade to Pro to export PDF</span>';
-    pdfBtn.classList.add('locked');
+    pdfBtn.className='action-btn pdf locked';
   }
 }
 
@@ -1026,7 +1039,6 @@ function exportPDF(data,score){
 
   // Contents box
   roundRect(M,y,CW,34,3,C.surface2);
-  setFill(...C.border[0],...C.border);
   doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...C.lime);
   doc.text('CONTENTS',M+8,y+8);
   doc.setFontSize(9);doc.setFont('helvetica','normal');setFG(...C.text2);
