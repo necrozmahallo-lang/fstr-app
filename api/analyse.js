@@ -84,7 +84,7 @@ async function fetchTranscript(videoId) {
     const xml = await capRes.text();
     const transcript = (xml.match(/<text[^>]*>([^<]*)<\/text>/g) || [])
       .map(t => t.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&#39;/g,"'").replace(/&quot;/g,'"').trim())
-      .filter(Boolean).join(' ').substring(0, 14000);
+      .filter(Boolean).join(' ').substring(0, 8000);
 
     return { title, channel, transcript };
   } catch (err) {
@@ -121,22 +121,16 @@ export default async function handler(req, res) {
     ? `ACTUAL VIDEO TRANSCRIPT (read this carefully — your entire analysis must be based on this):\n\n"${transcript}"\n\nVideo Title: ${title}\nChannel: ${channel}`
     : `Video URL: ${url.trim()}\nVideo ID: ${videoId}\nVideo Title (from page): ${title}\nChannel: ${channel}\nNote: No transcript available. Use your best knowledge of this specific video.`;
 
-  const prompt = `You are FSTR, a world-class educational AI that transforms YouTube videos into deeply insightful learning materials.
+  const prompt = `You are FSTR, an AI learning tool. Analyse this YouTube video and return study material.
 
 ${contentSection}
 
-Your job: Produce a DEEPLY SPECIFIC, HIGHLY DETAILED analysis of this exact video. Every sentence must reference actual content from the transcript above. Never write generic statements that could apply to any video on this topic. If the presenter makes a specific point, name it. If they give an example, reference it. If they use a specific analogy or framework, include it.
+RULES:
+1. Return ONLY raw JSON — no markdown, no backticks, nothing outside { }
+2. Be SPECIFIC to this video's actual content — not generic summaries
+3. Reference what the presenter actually said, examples they used, frameworks they introduced
 
-CRITICAL RULES:
-1. Return ONLY a raw JSON object — no markdown, no backticks, nothing before { or after }
-2. Every field must be deeply specific to THIS video's actual content
-3. Concepts must explain the SPECIFIC way this presenter explained each idea — not textbook definitions
-4. The TL;DR must mention specific arguments or frameworks from THIS video
-5. Study plan tasks must reference THIS video's content specifically
-
-Return this exact JSON structure:
-
-{"videoTitle":"${title || 'YouTube Video'}","channelName":"${channel || ''}","tldr":"4-5 sentences. Start with what specific problem or question this video addresses. Explain the presenter's specific approach or framework. Mention 2-3 specific arguments or insights they make. End with what the viewer will be able to do or understand after watching.","concepts":[{"title":"Specific concept title from this video","explanation":"3-4 sentences. Explain this concept EXACTLY as presented in the video. Reference the specific way the presenter explained it, any examples they used, any frameworks or analogies they introduced. Be so specific that someone who watched the video would immediately recognise this explanation."},{"title":"Second concept","explanation":"3-4 sentences specific to this video"},{"title":"Third concept","explanation":"3-4 sentences specific to this video"},{"title":"Fourth concept","explanation":"3-4 sentences specific to this video"},{"title":"Fifth concept","explanation":"3-4 sentences specific to this video"},{"title":"Sixth concept","explanation":"3-4 sentences specific to this video"},{"title":"Seventh concept","explanation":"3-4 sentences specific to this video"}],"quiz":[{"question":"A specific question about a point made in this video — not generic","options":["Plausible but wrong answer","Correct answer matching what the video said","Another plausible wrong answer","Another wrong answer"],"correct":1,"explanation":"2-3 sentences explaining why this is correct based on what the video actually said, and what the wrong answers miss."},{"question":"Second specific question","options":["A","B","C","D"],"correct":0,"explanation":"Detailed explanation"},{"question":"Third question","options":["A","B","C","D"],"correct":2,"explanation":"Detailed explanation"},{"question":"Fourth question","options":["A","B","C","D"],"correct":3,"explanation":"Detailed explanation"},{"question":"Fifth question","options":["A","B","C","D"],"correct":1,"explanation":"Detailed explanation"}],"studyPlan":{"intro":"One sentence on the specific skill or knowledge this video builds — mention the topic explicitly.","weeks":[{"week":"Week 1","title":"Build the Foundation","goal":"Specific goal based on this video's content","days":[{"label":"Day 1–2","task":"Specific actionable task directly referencing this video's concepts"},{"label":"Day 3–4","task":"Specific practice task building on the video"},{"label":"Day 5–7","task":"Specific consolidation exercise"}]},{"week":"Week 2","title":"Practice and Apply","goal":"Specific independent capability goal","days":[{"label":"Day 1–2","task":"Specific practice directly related to this video's topic"},{"label":"Day 3–5","task":"Specific mini-project or exercise"},{"label":"Day 6–7","task":"Review and identify gaps"}]},{"week":"Week 3","title":"Build Something Real","goal":"A completed deliverable that proves mastery of this topic","days":[{"label":"Project","task":"Specific project idea that uses everything taught in this video"},{"label":"Requirements","task":"Specific things the project must demonstrate from this video's teachings"},{"label":"Share","task":"How to publish or showcase this specific work"}]}],"nextVideo":"Specific YouTube search query for the best next video on this exact topic"}}`;
+{"videoTitle":"${title || 'YouTube Video'}","channelName":"${channel || ''}","tldr":"3-4 sentences. What specific problem does this video address? What is the presenter's specific approach? What will the viewer understand after watching?","concepts":[{"title":"First key concept from this video","explanation":"2-3 sentences. Explain exactly how this presenter explained this concept. Reference specific examples or analogies they used."},{"title":"Second concept","explanation":"2-3 specific sentences from the video"},{"title":"Third concept","explanation":"2-3 specific sentences from the video"},{"title":"Fourth concept","explanation":"2-3 specific sentences from the video"},{"title":"Fifth concept","explanation":"2-3 specific sentences from the video"}],"quiz":[{"question":"Specific question about a point from this video","options":["Wrong but plausible","Correct answer based on video","Another wrong answer","Another wrong answer"],"correct":1,"explanation":"Why this is correct based on what the video said."},{"question":"Second question","options":["A","B","C","D"],"correct":0,"explanation":"Explanation"},{"question":"Third question","options":["A","B","C","D"],"correct":2,"explanation":"Explanation"},{"question":"Fourth question","options":["A","B","C","D"],"correct":3,"explanation":"Explanation"},{"question":"Fifth question","options":["A","B","C","D"],"correct":1,"explanation":"Explanation"}],"studyPlan":{"intro":"One sentence on the specific skill this video builds.","weeks":[{"week":"Week 1","title":"Build the Foundation","goal":"Specific goal for week 1","days":[{"label":"Day 1-2","task":"Specific task referencing this video's content"},{"label":"Day 3-4","task":"Specific practice task"},{"label":"Day 5-7","task":"Consolidation exercise"}]},{"week":"Week 2","title":"Practice and Apply","goal":"Specific independent capability","days":[{"label":"Day 1-2","task":"Specific practice"},{"label":"Day 3-5","task":"Specific mini-project"},{"label":"Day 6-7","task":"Review and identify gaps"}]},{"week":"Week 3","title":"Build Something Real","goal":"Completed deliverable proving mastery","days":[{"label":"Project","task":"Specific project using this video's content"},{"label":"Requirements","task":"What the project must demonstrate"},{"label":"Share","task":"How to publish or showcase it"}]}],"nextVideo":"Best YouTube search query for the next video on this topic"}}`;
 
   try {
     const gemRes = await fetch(
@@ -146,7 +140,7 @@ Return this exact JSON structure:
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 4500, temperature: 0.3 },
+          generationConfig: { maxOutputTokens: 3000, temperature: 0.35 },
           safetySettings: [
             { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
             { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
