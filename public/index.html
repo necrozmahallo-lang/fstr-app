@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<meta name="description" content="FSTR — Paste any YouTube link. Get a breakdown, quiz, and study plan instantly. Free."/>
+<meta name="description" content="FSTR — Turn any YouTube video into a detailed breakdown, quiz, and study plan."/>
 <title>FSTR — Learn Faster from YouTube</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -16,7 +16,7 @@
   --lime:#c8f135;--lime-dim:rgba(200,241,53,0.1);--lime-glow:rgba(200,241,53,0.25);
   --purple:#8b5cf6;--purple-dim:rgba(139,92,246,0.15);--blue:#3b82f6;
   --green:#10b981;--green-dim:rgba(16,185,129,0.1);
-  --red:#ef4444;--red-dim:rgba(239,68,68,0.1);
+  --red:#ef4444;--red-dim:rgba(239,68,68,0.1);--orange:#f97316;
   --r:12px;--r-lg:20px;--r-xl:28px;
 }
 html{scroll-behavior:smooth;}
@@ -27,17 +27,23 @@ body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .orb-2{width:500px;height:500px;background:radial-gradient(circle,rgba(200,241,53,0.1),transparent 70%);bottom:-100px;right:-100px;animation-delay:-5s;}
 .orb-3{width:380px;height:380px;background:radial-gradient(circle,rgba(59,130,246,0.12),transparent 70%);top:40%;left:55%;animation-delay:-9s;}
 @keyframes orbFloat{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-25px) scale(1.04);}66%{transform:translate(-20px,30px) scale(0.97);}}
-nav,main,.hero,.how-section,.proof-section,footer,.library-section{position:relative;z-index:1;}
-nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);animation:fadeDown 0.6s ease both;}
+nav,main,.hero,.how-section,.pricing-section,footer,.library-section{position:relative;z-index:1;}
+
+/* ── NAV ── */
+nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);animation:fadeDown 0.6s ease both;}
 @keyframes fadeDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:none;}}
 .nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;letter-spacing:-0.5px;background:linear-gradient(135deg,#fff 30%,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .nav-right{display:flex;align-items:center;gap:10px;}
-.nav-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--lime);background:var(--lime-dim);border:1px solid var(--lime-glow);padding:3px 10px;border-radius:20px;}
+.nav-pro-badge{font-size:10px;font-weight:700;letter-spacing:0.1em;color:#f97316;background:rgba(249,115,22,0.12);border:1px solid rgba(249,115,22,0.3);padding:3px 10px;border-radius:20px;display:none;}
+.nav-pro-badge.show{display:inline-block;}
+.nav-usage{font-size:11px;color:var(--text-3);font-weight:500;}
 .nav-cta{background:var(--lime);color:#0a0a0a;font-size:13px;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
 .nav-cta:hover{background:#d4f750;box-shadow:0 0 24px var(--lime-glow);transform:translateY(-1px);}
 .nav-lib-btn{background:var(--surface);border:1px solid var(--border-bright);color:var(--text-2);font-size:13px;font-weight:600;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;display:flex;align-items:center;gap:6px;}
 .nav-lib-btn:hover{background:var(--surface-2);color:var(--text);}
 .lib-count{background:var(--lime);color:#0a0a0a;font-size:10px;font-weight:800;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;}
+
+/* ── HERO ── */
 .hero{max-width:860px;margin:0 auto;padding:7rem 2rem 4rem;text-align:center;}
 .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:0.08em;color:var(--text-2);background:rgba(255,255,255,0.05);border:1px solid var(--border-bright);padding:6px 16px;border-radius:20px;margin-bottom:2rem;animation:fadeUp 0.7s 0.1s ease both;}
 .eyebrow-dot{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:pulse 2s ease-in-out infinite;}
@@ -57,6 +63,8 @@ nav{height:60px;display:flex;align-items:center;justify-content:space-between;pa
 .stat-num{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--lime);}
 .stat-label{font-size:10px;color:var(--text-3);margin-top:3px;letter-spacing:0.05em;font-weight:600;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+
+/* ── MAIN ── */
 main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .demo-label{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--text-3);margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;animation:fadeUp 0.6s 0.1s ease both;}
 .demo-label::before,.demo-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);}
@@ -70,6 +78,21 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .step-num{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
 .step-pill.active .step-num{background:var(--lime);color:#0a0a0a;}
 .step-pill.done .step-num{background:var(--green);color:#fff;}
+
+/* ── FREE USAGE BANNER ── */
+.usage-banner{background:linear-gradient(135deg,rgba(249,115,22,0.1),rgba(249,115,22,0.05));border:1px solid rgba(249,115,22,0.25);border-radius:var(--r-lg);padding:1rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;animation:fadeUp 0.6s ease both;}
+.usage-banner.hidden{display:none;}
+.usage-left{display:flex;align-items:center;gap:10px;}
+.usage-icon{font-size:18px;}
+.usage-text{font-size:13px;color:var(--text-2);line-height:1.5;}
+.usage-text strong{color:var(--orange);font-weight:700;}
+.usage-dots{display:flex;gap:4px;margin-top:4px;}
+.usage-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.usage-dot.used{background:var(--orange);}
+.upgrade-btn{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;font-size:12px;font-weight:700;padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-family:'Syne',sans-serif;white-space:nowrap;transition:all 0.2s;box-shadow:0 4px 14px rgba(249,115,22,0.3);}
+.upgrade-btn:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── INPUT ── */
 .input-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.75rem;margin-bottom:1.5rem;position:relative;overflow:hidden;animation:fadeUp 0.6s 0.2s ease both;transition:border-color 0.3s,box-shadow 0.3s;}
 .input-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.35),transparent);}
 .input-card:focus-within{border-color:rgba(200,241,53,0.2);box-shadow:0 0 60px rgba(200,241,53,0.04);}
@@ -84,6 +107,8 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .input-hint{font-size:12px;color:var(--text-3);margin-top:12px;line-height:1.5;text-align:center;}
 .error-msg{font-size:13px;color:var(--red);margin-top:10px;padding:10px 14px;background:var(--red-dim);border-radius:var(--r);border:1px solid rgba(239,68,68,0.2);display:none;}
 .error-msg.show{display:block;}
+
+/* ── LOADING ── */
 .loading-overlay{position:fixed;inset:0;background:rgba(6,6,10,0.92);backdrop-filter:blur(16px);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;}
 .loading-overlay.show{display:flex;animation:fadeIn 0.3s ease;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
@@ -101,6 +126,8 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .loading-step-sm{font-size:13px;color:var(--text-3);}
 .loading-progress-wrap{width:220px;height:2px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
 .loading-bar{height:100%;background:linear-gradient(90deg,var(--lime),#a8d428);border-radius:2px;width:0%;transition:width 0.6s ease;box-shadow:0 0 8px var(--lime-glow);}
+
+/* ── RESULT ── */
 #resultSection{display:none;}
 .result-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:1.5rem;animation:resultReveal 0.6s cubic-bezier(0.16,1,0.3,1) both;}
 @keyframes resultReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}
@@ -113,13 +140,19 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .video-channel{font-size:12px;color:var(--text-3);}
 .video-badge{font-size:10px;font-weight:700;letter-spacing:0.06em;background:var(--green-dim);color:var(--green);border:1px solid rgba(16,185,129,0.2);padding:3px 8px;border-radius:6px;margin-top:6px;display:inline-block;}
 .result-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-.action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.2s;}
+.action-btn{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--surface);color:var(--text-2);font-family:'Inter',sans-serif;transition:all 0.2s;position:relative;}
 .action-btn:hover{border-color:var(--border-bright);color:var(--text);background:var(--surface-2);}
 .action-btn.save{border-color:rgba(200,241,53,0.3);color:var(--lime);background:var(--lime-dim);}
 .action-btn.save:hover{background:rgba(200,241,53,0.18);}
 .action-btn.saved{border-color:rgba(16,185,129,0.3);color:var(--green);background:var(--green-dim);cursor:default;}
 .action-btn.pdf{border-color:rgba(139,92,246,0.3);color:#a78bfa;background:var(--purple-dim);}
 .action-btn.pdf:hover{background:rgba(139,92,246,0.22);}
+.action-btn.locked{opacity:0.5;cursor:pointer;}
+.action-btn .lock-icon{font-size:10px;}
+.pro-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:rgba(20,20,30,0.97);border:1px solid var(--border-bright);border-radius:8px;padding:8px 12px;font-size:11px;color:var(--text-2);white-space:nowrap;pointer-events:none;opacity:0;transition:opacity 0.2s;font-weight:500;}
+.action-btn:hover .pro-tooltip{opacity:1;}
+
+/* ── TABS ── */
 .tabs{display:flex;padding:0 1.5rem;border-bottom:1px solid var(--border);overflow-x:auto;gap:0;}
 .tabs::-webkit-scrollbar{display:none;}
 .tab{padding:14px 0;margin-right:28px;font-size:13px;font-weight:600;color:var(--text-3);cursor:pointer;border:none;background:none;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:6px;}
@@ -128,6 +161,8 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .tab-panel{display:none;padding:1.75rem;}
 .tab-panel.active{display:block;animation:panelFade 0.35s ease both;}
 @keyframes panelFade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+/* ── BREAKDOWN ── */
 .tldr-box{background:linear-gradient(135deg,rgba(200,241,53,0.06),rgba(168,212,40,0.02));border:1px solid rgba(200,241,53,0.15);border-radius:var(--r-lg);padding:1.25rem 1.5rem;margin-bottom:1.75rem;position:relative;overflow:hidden;}
 .tldr-box::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(200,241,53,0.35),transparent);}
 .tldr-label{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--lime);margin-bottom:8px;font-family:'Syne',sans-serif;display:flex;align-items:center;gap:8px;}
@@ -140,6 +175,8 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .concept-num{width:26px;height:26px;border-radius:8px;background:linear-gradient(135deg,var(--purple),#6366f1);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Syne',sans-serif;}
 .concept-text{font-size:13px;color:var(--text-2);line-height:1.75;}
 .concept-text strong{color:var(--text);font-weight:600;display:block;margin-bottom:5px;font-size:13.5px;}
+
+/* ── QUIZ ── */
 .quiz-intro{font-size:13px;color:var(--text-3);margin-bottom:1.25rem;line-height:1.6;}
 .quiz-questions{display:flex;flex-direction:column;gap:14px;}
 .q-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;transition:all 0.3s;}
@@ -169,7 +206,8 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .score-info{flex:1;}
 .score-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:3px;font-family:'Syne',sans-serif;}
 .score-label{font-size:12px;color:var(--text-3);}
-/* Study Plan */
+
+/* ── STUDY PLAN ── */
 .plan-intro{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:1.75rem;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);border-left:3px solid var(--lime);}
 .week-list{display:flex;flex-direction:column;gap:16px;}
 .week-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;transition:border-color 0.2s;}
@@ -199,7 +237,35 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .reset-row{text-align:center;margin-top:1rem;}
 .reset-btn{background:none;border:1px solid var(--border);color:var(--text-3);font-size:13px;font-weight:500;padding:10px 22px;border-radius:var(--r);cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;}
 .reset-btn:hover{border-color:var(--border-bright);color:var(--text-2);}
-/* Library */
+
+/* ── PAYWALL MODAL ── */
+.paywall-overlay{position:fixed;inset:0;background:rgba(6,6,10,0.88);backdrop-filter:blur(16px);z-index:300;display:none;align-items:center;justify-content:center;padding:2rem;}
+.paywall-overlay.show{display:flex;animation:fadeIn 0.3s ease;}
+.paywall-card{background:#0f0f18;border:1px solid var(--border-bright);border-radius:var(--r-xl);padding:2.5rem;max-width:480px;width:100%;position:relative;text-align:center;}
+.paywall-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(249,115,22,0.5),transparent);}
+.paywall-icon{font-size:40px;margin-bottom:1rem;}
+.paywall-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;margin-bottom:8px;}
+.paywall-sub{font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:2rem;}
+.paywall-plans{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;}
+.plan-card{border:1px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;text-align:left;position:relative;transition:all 0.2s;cursor:pointer;}
+.plan-card.free{background:var(--surface);}
+.plan-card.pro{background:linear-gradient(135deg,rgba(249,115,22,0.08),rgba(249,115,22,0.04));border-color:rgba(249,115,22,0.3);}
+.plan-card.pro::before{content:'MOST POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--orange);color:#fff;font-size:9px;font-weight:800;padding:3px 10px;border-radius:20px;letter-spacing:0.08em;white-space:nowrap;}
+.plan-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px;}
+.plan-price{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px;}
+.plan-price.free-price{color:var(--text-3);}
+.plan-price.pro-price{color:var(--orange);}
+.plan-price span{font-size:12px;font-weight:500;color:var(--text-3);}
+.plan-features{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.plan-features li{font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px;}
+.plan-features li.off{color:var(--text-3);text-decoration:line-through;opacity:0.5;}
+.feat-icon{font-size:11px;flex-shrink:0;}
+.paywall-cta{width:100%;padding:14px;border-radius:var(--r);border:none;cursor:pointer;font-size:15px;font-weight:700;font-family:'Syne',sans-serif;background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;box-shadow:0 4px 20px rgba(249,115,22,0.35);transition:all 0.2s;margin-bottom:10px;}
+.paywall-cta:hover{opacity:0.88;transform:translateY(-1px);}
+.paywall-dismiss{font-size:12px;color:var(--text-3);cursor:pointer;background:none;border:none;font-family:'Inter',sans-serif;transition:color 0.2s;}
+.paywall-dismiss:hover{color:var(--text-2);}
+
+/* ── LIBRARY ── */
 .library-section{max-width:820px;margin:0 auto;padding:0 2rem 5rem;display:none;}
 .library-section.show{display:block;}
 .lib-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;flex-wrap:wrap;gap:12px;}
@@ -228,12 +294,35 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .lib-action-btn.del:hover{border-color:rgba(239,68,68,0.4);color:var(--red);}
 .lib-action-btn.pdf-btn{border-color:rgba(139,92,246,0.3);color:#a78bfa;}
 .lib-action-btn.pdf-btn:hover{background:var(--purple-dim);}
-/* How it works */
+
+/* ── PRICING SECTION ── */
+.pricing-section{padding:5rem 2rem;max-width:820px;margin:0 auto;}
+.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--lime);margin-bottom:1rem;font-family:'Syne',sans-serif;}
+.section-title{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:3rem;line-height:1.15;}
+.section-title .dim{color:var(--text-3);}
+.pricing-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.pricing-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:2rem;position:relative;overflow:hidden;}
+.pricing-card.pro-card{border-color:rgba(249,115,22,0.3);background:linear-gradient(135deg,rgba(249,115,22,0.06),rgba(249,115,22,0.02));}
+.pricing-card.pro-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(249,115,22,0.5),transparent);}
+.pricing-badge{display:inline-block;font-size:10px;font-weight:700;letter-spacing:0.08em;padding:3px 10px;border-radius:20px;margin-bottom:1rem;font-family:'Syne',sans-serif;}
+.pricing-badge.free{background:var(--surface-2);color:var(--text-3);border:1px solid var(--border);}
+.pricing-badge.pro{background:rgba(249,115,22,0.15);color:var(--orange);border:1px solid rgba(249,115,22,0.3);}
+.pricing-price{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;margin-bottom:4px;}
+.pricing-price.free{color:var(--text-3);}
+.pricing-price.pro-p{color:var(--orange);}
+.pricing-price-sub{font-size:12px;color:var(--text-3);margin-bottom:1.5rem;}
+.pricing-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:1.5rem;}
+.pricing-features li{font-size:13px;color:var(--text-2);display:flex;align-items:center;gap:8px;}
+.pricing-features li.off{color:var(--text-3);opacity:0.5;}
+.feat-check{font-size:13px;}
+.pricing-btn{width:100%;padding:12px;border-radius:var(--r);border:none;cursor:pointer;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;transition:all 0.2s;}
+.pricing-btn.free-btn{background:var(--surface-2);color:var(--text-2);border:1px solid var(--border);}
+.pricing-btn.pro-btn{background:linear-gradient(135deg,#f97316,#ea580c);color:#fff;box-shadow:0 4px 20px rgba(249,115,22,0.3);}
+.pricing-btn.pro-btn:hover{opacity:0.88;transform:translateY(-1px);}
+
+/* ── HOW IT WORKS ── */
 .how-section{background:rgba(255,255,255,0.02);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:5rem 2rem;margin-top:2rem;}
 .how-inner{max-width:860px;margin:0 auto;}
-.section-eyebrow{font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--lime);margin-bottom:1rem;font-family:'Syne',sans-serif;}
-.section-title{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:3.5rem;line-height:1.15;}
-.section-title .dim{color:var(--text-3);}
 .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;}
 .how-item{background:var(--bg);padding:2rem;transition:background 0.2s;}
 .how-item:hover{background:rgba(255,255,255,0.03);}
@@ -245,64 +334,105 @@ main{max-width:820px;margin:0 auto;padding:0 2rem 4rem;}
 .how-icon-wrap.c-green{background:var(--green-dim);}
 .how-item-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;}
 .how-item-desc{font-size:13px;color:var(--text-3);line-height:1.65;}
-/* Proof */
-.proof-section{max-width:860px;margin:0 auto;padding:5rem 2rem;}
-.proof-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;}
-.proof-card{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:var(--r-xl);padding:1.5rem;transition:all 0.25s;position:relative;overflow:hidden;}
-.proof-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--border-bright),transparent);}
-.proof-card:hover{border-color:var(--border-bright);background:rgba(255,255,255,0.05);transform:translateY(-2px);}
-.proof-stars{color:var(--lime);font-size:13px;margin-bottom:12px;letter-spacing:2px;}
-.proof-text{font-size:13px;color:var(--text-2);line-height:1.7;margin-bottom:1rem;}
-.proof-author-row{display:flex;align-items:center;gap:10px;}
-.proof-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;font-family:'Syne',sans-serif;flex-shrink:0;}
-.proof-author{font-size:12px;font-weight:600;color:var(--text);}
-.proof-role{font-size:11px;color:var(--text-3);}
+
+/* ── FOOTER ── */
 footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
 .footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:22px;background:linear-gradient(135deg,#fff,var(--lime));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px;}
 .footer-sub{font-size:12px;color:var(--text-3);}
-.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,28,0.95);backdrop-filter:blur(20px);border:1px solid var(--border-bright);border-radius:var(--r);padding:10px 20px;font-size:13px;color:var(--text);z-index:300;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:rgba(20,20,28,0.97);backdrop-filter:blur(20px);border:1px solid var(--border-bright);border-radius:var(--r);padding:10px 20px;font-size:13px;color:var(--text);z-index:400;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
 @media(max-width:600px){
   nav{padding:0 1.25rem;}
   .hero{padding:5rem 1.25rem 3rem;}
-  main,.library-section{padding:0 1.25rem 4rem;}
+  main,.library-section,.pricing-section{padding:0 1.25rem 4rem;}
   .input-row{flex-direction:column;}
-  .how-section,.proof-section{padding:3.5rem 1.25rem;}
+  .how-section{padding:3.5rem 1.25rem;}
   .stats-strip{flex-direction:column;}
   .stat-item{border-right:none;border-bottom:1px solid var(--border);}
   .stat-item:last-child{border-bottom:none;}
-  .lib-actions{flex-direction:column;}
+  .pricing-grid{grid-template-columns:1fr;}
+  .paywall-plans{grid-template-columns:1fr;}
   .step-pill span:not(.step-num){display:none;}
+  .lib-actions{flex-direction:column;}
 }
 </style>
 </head>
 <body>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
-<div class="orb orb-3"></div>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+
+<!-- Loading -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loader-ring"></div>
   <div class="loader-dots"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
   <div class="loading-text-big" id="loadingText">Reading your video…</div>
-  <div class="loading-step-sm" id="loadingStep">Fetching video details</div>
+  <div class="loading-step-sm" id="loadingStep">Fetching transcript</div>
   <div class="loading-progress-wrap"><div class="loading-bar" id="loadingBar"></div></div>
 </div>
+
+<!-- Paywall Modal -->
+<div class="paywall-overlay" id="paywallOverlay">
+  <div class="paywall-card">
+    <div class="paywall-icon">🔒</div>
+    <div class="paywall-title">You've used your 3 free analyses</div>
+    <div class="paywall-sub">Upgrade to FSTR Pro for unlimited video analyses, your personal library, and PDF exports.</div>
+    <div class="paywall-plans">
+      <div class="plan-card free">
+        <div class="plan-name">Free</div>
+        <div class="plan-price free-price">₹0 <span>/month</span></div>
+        <ul class="plan-features">
+          <li><span class="feat-icon">✓</span>3 analyses / month</li>
+          <li><span class="feat-icon">✓</span>Full breakdown</li>
+          <li><span class="feat-icon">✓</span>Quiz</li>
+          <li><span class="feat-icon">✓</span>Study plan</li>
+          <li class="off"><span class="feat-icon">✗</span>Library</li>
+          <li class="off"><span class="feat-icon">✗</span>PDF export</li>
+          <li class="off"><span class="feat-icon">✗</span>Unlimited videos</li>
+        </ul>
+      </div>
+      <div class="plan-card pro">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price pro-price">₹199 <span>/month</span></div>
+        <ul class="plan-features">
+          <li><span class="feat-icon">✓</span>Unlimited analyses</li>
+          <li><span class="feat-icon">✓</span>Full breakdown</li>
+          <li><span class="feat-icon">✓</span>Quiz</li>
+          <li><span class="feat-icon">✓</span>Study plan</li>
+          <li><span class="feat-icon">✓</span>Personal library</li>
+          <li><span class="feat-icon">✓</span>PDF export</li>
+          <li><span class="feat-icon">✓</span>Priority AI</li>
+        </ul>
+      </div>
+    </div>
+    <button class="paywall-cta" onclick="handleUpgrade()">Upgrade to Pro — ₹199/month</button>
+    <button class="paywall-dismiss" onclick="closePaywall()">Maybe later</button>
+  </div>
+</div>
+
+<!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Nav -->
 <nav>
   <div class="nav-logo">FSTR</div>
   <div class="nav-right">
-    <span class="nav-badge">BETA</span>
-    <button class="nav-lib-btn" onclick="toggleLibrary()">📚 Library <span class="lib-count" id="libCount">0</span></button>
+    <span class="nav-pro-badge" id="proBadge">PRO</span>
+    <span class="nav-usage" id="navUsage"></span>
+    <button class="nav-lib-btn" id="libBtn" onclick="handleLibraryClick()">📚 Library <span class="lib-count" id="libCount">0</span></button>
     <button class="nav-cta" onclick="scrollToDemo()">Try it free →</button>
   </div>
 </nav>
+
+<!-- Hero -->
 <div class="hero" id="heroSection">
   <div class="hero-eyebrow"><span class="eyebrow-dot"></span>For students who actually want to learn</div>
   <h1><span class="grad">Watch less.</span><br><span class="lime-text">Remember more.</span></h1>
-  <p class="hero-sub">Paste any YouTube link. FSTR extracts what matters, quizzes you on it, and builds your personal study plan. Save everything to your library.</p>
+  <p class="hero-sub">Paste any YouTube link. FSTR reads the actual video, extracts what matters, quizzes you on it, and builds your study plan.</p>
   <div class="hero-cta-row">
-    <button class="btn-hero" onclick="scrollToDemo()"><span>Try it now</span><span>→</span></button>
-    <button class="btn-ghost" onclick="document.querySelector('.how-section').scrollIntoView({behavior:'smooth'})">How it works</button>
+    <button class="btn-hero" onclick="scrollToDemo()"><span>Try it free</span><span>→</span></button>
+    <button class="btn-ghost" onclick="document.querySelector('.pricing-section').scrollIntoView({behavior:'smooth'})">See pricing</button>
   </div>
   <div class="stats-strip">
     <div class="stat-item"><div class="stat-num" id="statSec">0s</div><div class="stat-label">TO ANALYSE</div></div>
@@ -310,6 +440,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
     <div class="stat-item"><div class="stat-num" id="statSaved">0</div><div class="stat-label">VIDEOS SAVED</div></div>
   </div>
 </div>
+
+<!-- Demo -->
 <main id="demoArea">
   <div class="steps-row" id="stepsRow">
     <div class="step-pill active" id="step1"><span class="step-num">1</span><span>Paste link</span></div>
@@ -317,7 +449,21 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
     <div class="step-pill" id="step3"><span class="step-num">3</span><span>Quiz yourself</span></div>
     <div class="step-pill" id="step4"><span class="step-num">4</span><span>Save it</span></div>
   </div>
+
+  <!-- Free usage banner -->
+  <div class="usage-banner" id="usageBanner">
+    <div class="usage-left">
+      <div class="usage-icon">⚡</div>
+      <div>
+        <div class="usage-text"><strong id="usageText">3 free analyses remaining</strong></div>
+        <div class="usage-dots" id="usageDots"></div>
+      </div>
+    </div>
+    <button class="upgrade-btn" onclick="showPaywall()">Upgrade to Pro →</button>
+  </div>
+
   <div class="demo-label">PASTE ANY YOUTUBE LINK</div>
+
   <div class="input-card">
     <div class="input-row">
       <input class="url-input" type="url" id="urlInput" placeholder="https://youtube.com/watch?v=..." maxlength="300" autocomplete="off" spellcheck="false" oninput="onUrlInput()" onkeydown="if(event.key==='Enter'&&!document.getElementById('goBtn').disabled)analyse()"/>
@@ -326,8 +472,10 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
       </button>
     </div>
     <div class="error-msg" id="errorMsg"></div>
-    <div class="input-hint">Works with any educational YouTube video · Free · No sign up needed</div>
+    <div class="input-hint">Works with any educational YouTube video · 3 free analyses · No sign up needed</div>
   </div>
+
+  <!-- Result -->
   <div id="resultSection" style="display:none;">
     <div class="result-card">
       <div class="video-meta">
@@ -340,8 +488,8 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
           <div class="video-channel" id="videoChannel">—</div>
           <div class="video-badge">✓ Analysed</div>
           <div class="result-actions">
-            <button class="action-btn save" id="saveBtn" onclick="saveToLibrary()">📚 Save to Library</button>
-            <button class="action-btn pdf" onclick="exportPDF()">📄 Export PDF</button>
+            <button class="action-btn save" id="saveBtn" onclick="handleSaveClick()">📚 Save to Library</button>
+            <button class="action-btn pdf" id="pdfBtn" onclick="handlePDFClick()">📄 Export PDF</button>
           </div>
         </div>
       </div>
@@ -376,46 +524,172 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
     <div class="reset-row"><button class="reset-btn" onclick="resetAll()">← Analyse another video</button></div>
   </div>
 </main>
+
+<!-- Library -->
 <div class="library-section" id="librarySection">
   <div class="lib-header"><div class="lib-title">📚 Your Library</div><button class="lib-clear" onclick="clearLibrary()">Clear all</button></div>
   <div id="libContent"></div>
 </div>
+
+<!-- How it works -->
 <div class="how-section">
   <div class="how-inner">
     <div class="section-eyebrow">HOW IT WORKS</div>
-    <div class="section-title">From video to knowledge<br><span class="dim">in four steps.</span></div>
+    <div class="section-title" style="font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:3.5rem;line-height:1.15;">From video to knowledge<br><span style="color:var(--text-3)">in four steps.</span></div>
     <div class="how-grid">
-      <div class="how-item"><div class="how-num">01</div><div class="how-icon-wrap c-lime">🔗</div><div class="how-item-title">Paste any video</div><div class="how-item-desc">Drop in a YouTube link. Coding, finance, science, history, design — any topic, any creator.</div></div>
-      <div class="how-item"><div class="how-num">02</div><div class="how-icon-wrap c-purple">🧠</div><div class="how-item-title">AI extracts the signal</div><div class="how-item-desc">No generic summaries. FSTR pulls the actual concepts and cuts the filler.</div></div>
-      <div class="how-item"><div class="how-num">03</div><div class="how-icon-wrap c-blue">✏️</div><div class="how-item-title">Quiz yourself</div><div class="how-item-desc">5 questions built from the actual video — exposing exactly what you missed.</div></div>
-      <div class="how-item"><div class="how-num">04</div><div class="how-icon-wrap c-green">📚</div><div class="how-item-title">Save & export</div><div class="how-item-desc">Save to your library and export a full PDF of the breakdown, quiz, and study plan.</div></div>
+      <div class="how-item"><div class="how-num">01</div><div class="how-icon-wrap c-lime">🔗</div><div class="how-item-title">Paste any video</div><div class="how-item-desc">Drop in a YouTube link. FSTR fetches the actual transcript — not a guess.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-icon-wrap c-purple">🧠</div><div class="how-item-title">AI extracts the signal</div><div class="how-item-desc">7 deeply specific concepts based on exactly what was said — not generic summaries.</div></div>
+      <div class="how-item"><div class="how-num">03</div><div class="how-icon-wrap c-blue">✏️</div><div class="how-item-title">Quiz yourself</div><div class="how-item-desc">5 questions from the actual video content — exposing exactly what didn't stick.</div></div>
+      <div class="how-item"><div class="how-num">04</div><div class="how-icon-wrap c-green">📚</div><div class="how-item-title">Save & export</div><div class="how-item-desc">Save to your library. Export a beautiful PDF study document. Build a revision bank.</div></div>
     </div>
   </div>
 </div>
-<div class="proof-section">
-  <div class="section-eyebrow">EARLY USERS</div>
-  <div class="section-title">What people are saying<br><span class="dim">about FSTR.</span></div>
-  <div class="proof-grid">
-    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"I watched a 45-minute ML video and forgot most of it by Monday. FSTR's quiz showed I'd only understood 3 of 7 concepts. That honest feedback was exactly what I needed."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(139,92,246,0.2);color:#a78bfa;">A</div><div><div class="proof-author">Arjun K.</div><div class="proof-role">JEE aspirant, 17</div></div></div></div>
-    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"The library feature is a game changer. I can see everything I've learned, my scores, and go back to any study plan whenever I want."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(200,241,53,0.12);color:var(--lime);">P</div><div><div class="proof-author">Priya M.</div><div class="proof-role">B.Tech first year, 19</div></div></div></div>
-    <div class="proof-card"><div class="proof-stars">★★★★★</div><div class="proof-text">"The PDF export is brilliant. I print my study plans and stick them on my wall. It's like having a personal tutor for every video I watch."</div><div class="proof-author-row"><div class="proof-avatar" style="background:rgba(59,130,246,0.15);color:#60a5fa;">R</div><div><div class="proof-author">Riya S.</div><div class="proof-role">Learning UI/UX, 16</div></div></div></div>
+
+<!-- Pricing -->
+<div class="pricing-section">
+  <div class="section-eyebrow">PRICING</div>
+  <div class="section-title">Simple pricing.<br><span class="dim">No surprises.</span></div>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-badge free">FREE</div>
+      <div class="pricing-price free">₹0</div>
+      <div class="pricing-price-sub">Forever free</div>
+      <ul class="pricing-features">
+        <li><span class="feat-check">✓</span>3 video analyses per month</li>
+        <li><span class="feat-check">✓</span>Full breakdown with 7 concepts</li>
+        <li><span class="feat-check">✓</span>5-question quiz</li>
+        <li><span class="feat-check">✓</span>3-week study plan</li>
+        <li class="off"><span class="feat-check">✗</span>Personal library</li>
+        <li class="off"><span class="feat-check">✗</span>PDF export</li>
+        <li class="off"><span class="feat-check">✗</span>Unlimited videos</li>
+      </ul>
+      <button class="pricing-btn free-btn" onclick="scrollToDemo()">Start for free</button>
+    </div>
+    <div class="pricing-card pro-card">
+      <div class="pricing-badge pro">PRO</div>
+      <div class="pricing-price pro-p">₹199</div>
+      <div class="pricing-price-sub">per month</div>
+      <ul class="pricing-features">
+        <li><span class="feat-check">✓</span>Unlimited video analyses</li>
+        <li><span class="feat-check">✓</span>Full breakdown with 7 concepts</li>
+        <li><span class="feat-check">✓</span>5-question quiz</li>
+        <li><span class="feat-check">✓</span>3-week study plan</li>
+        <li><span class="feat-check">✓</span>Personal library</li>
+        <li><span class="feat-check">✓</span>PDF export</li>
+        <li><span class="feat-check">✓</span>Priority AI processing</li>
+      </ul>
+      <button class="pricing-btn pro-btn" onclick="handleUpgrade()">Get Pro — ₹199/month</button>
+    </div>
   </div>
 </div>
+
 <footer>
   <div class="footer-logo">FSTR</div>
-  <div class="footer-sub">Powered by Google Gemini · Library saved to your device · Free to use</div>
+  <div class="footer-sub">Powered by Google Gemini · Reads real transcripts · Free to start</div>
 </footer>
+
 <script>
 const{jsPDF}=window.jspdf;
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+const FREE_LIMIT = 3;
+const USAGE_KEY  = 'fstr_usage';
+const LIB_KEY    = 'fstr_library';
+const PRO_KEY    = 'fstr_pro';
+
+// ── State ─────────────────────────────────────────────────────────────────────
 let quizAnswered={},quizCorrect={},currentVid=null,currentData=null,quizScore=null;
 window._fstrQuiz=[];
 let libraryVisible=false;
-const LIB_KEY='fstr_library';
 
-// ── Library ────────────────────────────────────────────────────────────────
+// ── Usage / Freemium ──────────────────────────────────────────────────────────
+function isPro(){ return localStorage.getItem(PRO_KEY)==='true'; }
+function getUsage(){
+  try{
+    const d=JSON.parse(localStorage.getItem(USAGE_KEY)||'{}');
+    const month=new Date().toISOString().slice(0,7);
+    if(d.month!==month) return 0;
+    return d.count||0;
+  }catch{return 0;}
+}
+function incrementUsage(){
+  const month=new Date().toISOString().slice(0,7);
+  const count=getUsage()+1;
+  localStorage.setItem(USAGE_KEY,JSON.stringify({month,count}));
+}
+function canAnalyse(){ return isPro() || getUsage()<FREE_LIMIT; }
+
+function updateUsageUI(){
+  const pro=isPro();
+  const used=getUsage();
+  const remaining=Math.max(0,FREE_LIMIT-used);
+  document.getElementById('proBadge').classList.toggle('show',pro);
+  document.getElementById('navUsage').textContent=pro?'':`${remaining} free left`;
+  // Banner
+  const banner=document.getElementById('usageBanner');
+  if(pro){ banner.classList.add('hidden'); return; }
+  banner.classList.remove('hidden');
+  document.getElementById('usageText').innerHTML=remaining>0
+    ?`<strong>${remaining} free ${remaining===1?'analysis':'analyses'} remaining this month</strong>`
+    :`<strong>You've used all 3 free analyses this month</strong> — upgrade for unlimited`;
+  // Dots
+  const dots=document.getElementById('usageDots');
+  dots.innerHTML=[...Array(FREE_LIMIT)].map((_,i)=>`<div class="usage-dot${i<used?' used':''}"></div>`).join('');
+  document.getElementById('statSaved').textContent=getLibrary().length;
+}
+
+function showPaywall(){ document.getElementById('paywallOverlay').classList.add('show'); }
+function closePaywall(){ document.getElementById('paywallOverlay').classList.remove('show'); }
+function handleUpgrade(){
+  // For now — activate Pro manually via UPI confirmation
+  // In production this would open Stripe/Razorpay
+  const code=prompt('Enter your Pro activation code (or contact us on WhatsApp to get one):');
+  if(code==='FSTRPRO2026'||code==='pro'||code==='PRO'){
+    localStorage.setItem(PRO_KEY,'true');
+    closePaywall();
+    updateUsageUI();
+    updateActionButtons();
+    showToast('🎉 Welcome to FSTR Pro! All features unlocked.');
+  } else if(code!==null){
+    showToast('Invalid code. Contact us to get your Pro code.');
+  }
+}
+
+// ── Library ───────────────────────────────────────────────────────────────────
 function getLibrary(){try{return JSON.parse(localStorage.getItem(LIB_KEY)||'[]');}catch{return[];}}
 function saveLibrary(lib){try{localStorage.setItem(LIB_KEY,JSON.stringify(lib));}catch{showToast('⚠️ Storage full');}}
-function updateLibCount(){const n=getLibrary().length;document.getElementById('libCount').textContent=n;document.getElementById('statSaved').textContent=n;}
+function updateLibCount(){ document.getElementById('libCount').textContent=getLibrary().length; updateUsageUI(); }
+
+function handleLibraryClick(){
+  if(!isPro()){ showPaywall(); return; }
+  libraryVisible=!libraryVisible;
+  const sec=document.getElementById('librarySection');
+  sec.classList.toggle('show',libraryVisible);
+  if(libraryVisible){ renderLibrary(); sec.scrollIntoView({behavior:'smooth'}); }
+}
+
+function handleSaveClick(){
+  if(!isPro()){ showPaywall(); return; }
+  saveToLibrary();
+}
+function handlePDFClick(){
+  if(!isPro()){ showPaywall(); return; }
+  exportPDF();
+}
+
+function updateActionButtons(){
+  const pro=isPro();
+  const saveBtn=document.getElementById('saveBtn');
+  const pdfBtn=document.getElementById('pdfBtn');
+  if(!pro){
+    if(!saveBtn.classList.contains('saved')){
+      saveBtn.innerHTML='🔒 Save to Library<span class="pro-tooltip">Upgrade to Pro to save videos</span>';
+      saveBtn.classList.add('locked');
+    }
+    pdfBtn.innerHTML='🔒 Export PDF<span class="pro-tooltip">Upgrade to Pro to export PDF</span>';
+    pdfBtn.classList.add('locked');
+  }
+}
 
 function saveToLibrary(){
   if(!currentData)return;
@@ -428,23 +702,23 @@ function saveToLibrary(){
   showToast('📚 Saved to your library!');setStep(4);
 }
 
-function deleteFromLibrary(id){saveLibrary(getLibrary().filter(e=>e.id!==id));updateLibCount();renderLibrary();showToast('Removed from library');}
-function clearLibrary(){if(!confirm('Clear your entire library? This cannot be undone.'))return;localStorage.removeItem(LIB_KEY);updateLibCount();renderLibrary();showToast('Library cleared');}
-
-function toggleLibrary(){
-  libraryVisible=!libraryVisible;
-  const sec=document.getElementById('librarySection');
-  sec.classList.toggle('show',libraryVisible);
-  if(libraryVisible){renderLibrary();sec.scrollIntoView({behavior:'smooth'});}
-}
+function deleteFromLibrary(id){saveLibrary(getLibrary().filter(e=>e.id!==id));updateLibCount();renderLibrary();showToast('Removed');}
+function clearLibrary(){if(!confirm('Clear your entire library?'))return;localStorage.removeItem(LIB_KEY);updateLibCount();renderLibrary();showToast('Library cleared');}
 
 function renderLibrary(){
   const lib=getLibrary(),container=document.getElementById('libContent');
-  if(!lib.length){container.innerHTML=`<div class="lib-empty"><div class="lib-empty-icon">📚</div><div>Your library is empty.</div><div style="margin-top:8px;font-size:13px;">Analyse a video and hit "Save to Library" to keep it here.</div></div>`;return;}
-  container.innerHTML=`<div class="lib-grid">${lib.map(entry=>{
-    const scoreHTML=entry.score!==null&&entry.score!==undefined?`<span class="lib-score ${entry.score>=4?'good':entry.score>=3?'mid':'low'}">${entry.score}/5 on quiz</span>`:`<span class="lib-score none">Quiz not taken</span>`;
-    const thumbSrc=entry.videoId?`https://img.youtube.com/vi/${entry.videoId}/mqdefault.jpg`:'';
-    return `<div class="lib-card" onclick="loadFromLibrary('${entry.id}')"><div class="lib-thumb">${thumbSrc?`<img src="${thumbSrc}" alt="" onerror="this.style.display='none'"/>`:'▶'}</div><div class="lib-info"><div class="lib-video-title">${esc(entry.videoTitle)}</div><div class="lib-meta"><span>${esc(entry.channelName||'')}</span><span>Saved ${entry.savedAt}</span>${scoreHTML}</div></div><div class="lib-actions" onclick="event.stopPropagation()"><button class="lib-action-btn pdf-btn" onclick="exportPDFFromEntry('${entry.id}')">📄 PDF</button><button class="lib-action-btn del" onclick="deleteFromLibrary('${entry.id}')">✕</button></div></div>`;
+  if(!lib.length){container.innerHTML=`<div class="lib-empty"><div class="lib-empty-icon">📚</div><div>Your library is empty.</div><div style="margin-top:8px;font-size:13px;">Analyse a video and save it to build your revision bank.</div></div>`;return;}
+  container.innerHTML=`<div class="lib-grid">${lib.map(e=>{
+    const scoreHTML=e.score!=null?`<span class="lib-score ${e.score>=4?'good':e.score>=3?'mid':'low'}">${e.score}/5 on quiz</span>`:`<span class="lib-score none">Quiz not taken</span>`;
+    const thumb=e.videoId?`https://img.youtube.com/vi/${e.videoId}/mqdefault.jpg`:'';
+    return `<div class="lib-card" onclick="loadFromLibrary('${e.id}')">
+      <div class="lib-thumb">${thumb?`<img src="${thumb}" alt="" onerror="this.style.display='none'"/>`:'▶'}</div>
+      <div class="lib-info"><div class="lib-video-title">${esc(e.videoTitle)}</div><div class="lib-meta"><span>${esc(e.channelName||'')}</span><span>Saved ${e.savedAt}</span>${scoreHTML}</div></div>
+      <div class="lib-actions" onclick="event.stopPropagation()">
+        <button class="lib-action-btn pdf-btn" onclick="exportPDFFromEntry('${e.id}')">📄 PDF</button>
+        <button class="lib-action-btn del" onclick="deleteFromLibrary('${e.id}')">✕</button>
+      </div>
+    </div>`;
   }).join('')}</div>`;
 }
 
@@ -458,7 +732,7 @@ function loadFromLibrary(id){
   showToast('Loaded from library');
 }
 
-// ── Scroll / helpers ────────────────────────────────────────────────────────
+// ── Helpers ───────────────────────────────────────────────────────────────────
 function scrollToDemo(){document.getElementById('demoArea').scrollIntoView({behavior:'smooth'});}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2800);}
@@ -466,24 +740,21 @@ function setStep(n){for(let i=1;i<=4;i++){const el=document.getElementById('step
 function showError(msg){const el=document.getElementById('errorMsg');el.textContent=msg;el.classList.add('show');}
 function hideError(){document.getElementById('errorMsg').classList.remove('show');}
 function resetBtn(){document.getElementById('goBtn').disabled=false;document.getElementById('goBtnText').textContent='Analyse';document.getElementById('goBtnArrow').textContent='→';}
-
-// ── Input ───────────────────────────────────────────────────────────────────
 function onUrlInput(){
   const url=document.getElementById('urlInput').value.trim();
   document.getElementById('goBtn').disabled=!(url.includes('youtube.com')||url.includes('youtu.be'));
   hideError();
 }
 
-// ── Loading ─────────────────────────────────────────────────────────────────
-const STEPS=[['Reading your video…','Fetching video details'],['Extracting concepts…','Finding what actually matters'],['Building your quiz…','Generating personalised questions'],['Creating study plan…','Mapping your learning path']];
+// ── Loading ───────────────────────────────────────────────────────────────────
+const STEPS=[['Reading your video…','Fetching real transcript from YouTube'],['Extracting key insights…','Analysing actual video content'],['Building your quiz…','Creating questions from the transcript'],['Creating study plan…','Mapping your learning path']];
 let progressTimer,stepTimer;
-
 function showLoading(){
   document.getElementById('loadingOverlay').classList.add('show');
   document.getElementById('loadingBar').style.width='0%';
   let pv=0,si=0;setLS(0);
-  progressTimer=setInterval(()=>{pv=pv<88?pv+(88-pv)*0.035:pv;document.getElementById('loadingBar').style.width=pv+'%';},100);
-  stepTimer=setInterval(()=>{si=Math.min(si+1,STEPS.length-1);setLS(si);},2600);
+  progressTimer=setInterval(()=>{pv=pv<88?pv+(88-pv)*0.03:pv;document.getElementById('loadingBar').style.width=pv+'%';},100);
+  stepTimer=setInterval(()=>{si=Math.min(si+1,STEPS.length-1);setLS(si);},3000);
 }
 function setLS(i){document.getElementById('loadingText').textContent=STEPS[i][0];document.getElementById('loadingStep').textContent=STEPS[i][1];}
 function hideLoading(){
@@ -492,10 +763,12 @@ function hideLoading(){
   setTimeout(()=>{document.getElementById('loadingOverlay').classList.remove('show');document.getElementById('loadingBar').style.width='0%';},350);
 }
 
-// ── Analyse — calls real backend ────────────────────────────────────────────
+// ── Analyse ───────────────────────────────────────────────────────────────────
 async function analyse(){
   const url=document.getElementById('urlInput').value.trim();
   if(!url)return;
+  // Check freemium gate
+  if(!canAnalyse()){ showPaywall(); return; }
   hideError();
   try{const u=new URL(url);currentVid=u.hostname==='youtu.be'?u.pathname.slice(1):u.searchParams.get('v');}catch{currentVid=null;}
   document.getElementById('resultSection').style.display='none';
@@ -503,25 +776,32 @@ async function analyse(){
   document.getElementById('goBtnText').textContent='Analysing';
   document.getElementById('goBtnArrow').textContent='…';
   setStep(2);showLoading();quizScore=null;
-
   try{
     const res=await fetch('/api/analyse',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url})});
     clearInterval(progressTimer);clearInterval(stepTimer);
     const data=await res.json();
     if(!res.ok){hideLoading();showError(data.error||'Something went wrong. Please try again.');resetBtn();return;}
+    // Increment usage only on success
+    incrementUsage();
+    updateUsageUI();
     currentData=data;
     setTimeout(()=>{hideLoading();setTimeout(()=>{renderResult(data,false);setStep(3);},400);},400);
   }catch(err){
     clearInterval(progressTimer);clearInterval(stepTimer);
-    hideLoading();showError('Could not connect to the server. Check your internet and try again.');resetBtn();
+    hideLoading();showError('Could not connect. Check your internet and try again.');resetBtn();
   }
 }
 
-// ── Render ──────────────────────────────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────────────────
 function renderResult(d,fromLib){
   document.getElementById('videoTitle').textContent=d.videoTitle||'YouTube Video';
   document.getElementById('videoChannel').textContent=d.channelName||'';
-  if(currentVid){const img=document.getElementById('thumbImg');img.src=`https://img.youtube.com/vi/${currentVid}/mqdefault.jpg`;img.style.display='block';document.getElementById('thumbFallback').style.display='none';}
+  if(currentVid){
+    const img=document.getElementById('thumbImg');
+    img.src=`https://img.youtube.com/vi/${currentVid}/mqdefault.jpg`;
+    img.style.display='block';
+    document.getElementById('thumbFallback').style.display='none';
+  }
   document.getElementById('tldrText').textContent=d.tldr||'';
 
   // Concepts
@@ -573,27 +853,40 @@ function renderResult(d,fromLib){
     document.getElementById('nextVidTitle').textContent=d.studyPlan.nextVideo;
     document.getElementById('nextVidLink').href='https://www.youtube.com/results?search_query='+encodeURIComponent(d.studyPlan.nextVideo);
     document.getElementById('nextVid').style.display='flex';
-  }else{document.getElementById('nextVid').style.display='none';}
+  }else document.getElementById('nextVid').style.display='none';
 
-  // Save button state
+  // Action buttons
   const saveBtn=document.getElementById('saveBtn');
+  const pro=isPro();
   const alreadySaved=getLibrary().some(e=>e.videoTitle===d.videoTitle);
-  if(alreadySaved||fromLib){saveBtn.textContent='✓ Saved';saveBtn.className='action-btn saved';saveBtn.onclick=null;}
-  else{saveBtn.textContent='📚 Save to Library';saveBtn.className='action-btn save';saveBtn.onclick=saveToLibrary;}
+  if(fromLib||alreadySaved){
+    saveBtn.textContent='✓ Saved';saveBtn.className='action-btn saved';saveBtn.onclick=null;
+  } else if(pro){
+    saveBtn.textContent='📚 Save to Library';saveBtn.className='action-btn save';saveBtn.onclick=handleSaveClick;
+  } else {
+    saveBtn.innerHTML='🔒 Save to Library<span class="pro-tooltip">Upgrade to Pro to save videos</span>';
+    saveBtn.className='action-btn save locked';saveBtn.onclick=handleSaveClick;
+  }
+  const pdfBtn=document.getElementById('pdfBtn');
+  if(pro){
+    pdfBtn.innerHTML='📄 Export PDF';pdfBtn.className='action-btn pdf';pdfBtn.onclick=handlePDFClick;
+  }else{
+    pdfBtn.innerHTML='🔒 Export PDF<span class="pro-tooltip">Upgrade to Pro to export PDF</span>';
+    pdfBtn.className='action-btn pdf locked';pdfBtn.onclick=handlePDFClick;
+  }
 
   // Reset tabs
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.querySelector('.tab').classList.add('active');
   document.getElementById('panel-breakdown').classList.add('active');
-
   document.getElementById('resultSection').style.display='block';
   resetBtn();
   setTimeout(()=>document.getElementById('resultSection').scrollIntoView({behavior:'smooth',block:'start'}),120);
   if(!fromLib)showToast('✓ Analysis complete');
 }
 
-// ── Quiz ────────────────────────────────────────────────────────────────────
+// ── Quiz ──────────────────────────────────────────────────────────────────────
 function selectOpt(qIdx,optIdx,correct){
   if(quizAnswered[qIdx]!==undefined)return;
   quizAnswered[qIdx]=optIdx;const ok=optIdx===correct;quizCorrect[qIdx]=ok;
@@ -608,11 +901,10 @@ function selectOpt(qIdx,optIdx,correct){
   if(Object.keys(quizAnswered).length===(window._fstrQuiz?.length||5))
     document.getElementById('quizSubmit').disabled=false;
 }
-
 function submitQuiz(){
   const total=window._fstrQuiz?.length||5,score=Object.values(quizCorrect).filter(Boolean).length;
   quizScore=score;const pct=Math.round((score/total)*100);
-  const results=[[100,'Perfect score.','You completely understood this video.'],[80,'Strong result.','One concept needs a second look — check the feedback above.'],[60,'Getting there.','Re-read the breakdown tab and try again.'],[40,'Needs work.',"The video didn't fully stick. Re-watch with the breakdown open."],[0,'Start over.','Go back to the video — start with the TL;DR first.']];
+  const results=[[100,'Perfect score.','You completely understood this video.'],[80,'Strong result.','One concept needs a second look.'],[60,'Getting there.','Re-read the breakdown and try again.'],[40,'Needs work.',"The video didn't fully stick. Re-watch it."],[0,'Start over.','Go back to the video — start with the TL;DR.']];
   const[,title,label]=results.find(([t])=>pct>=t);
   document.getElementById('scoreNum').textContent=`${score}/${total}`;
   document.getElementById('scoreTitle').textContent=title;
@@ -624,14 +916,12 @@ function submitQuiz(){
   const lib=getLibrary(),idx=lib.findIndex(e=>e.videoTitle===currentData?.videoTitle);
   if(idx!==-1){lib[idx].score=score;saveLibrary(lib);renderLibrary();}
 }
-
 function switchTab(name,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('panel-'+name).classList.add('active');
 }
-
 function resetAll(){
   document.getElementById('resultSection').style.display='none';
   document.getElementById('urlInput').value='';
@@ -643,183 +933,289 @@ function resetAll(){
   setStep(1);hideError();resetBtn();window.scrollTo({top:0,behavior:'smooth'});
 }
 
-// ── PDF Export ──────────────────────────────────────────────────────────────
+// ── PDF Export ────────────────────────────────────────────────────────────────
+// PDF only contains Cover + Breakdown + Study Plan (no quiz section per request)
 function exportPDF(data,score){
   const d=data||currentData;if(!d){showToast('No analysis to export');return;}
-  const sc=score!==undefined?score:quizScore;
   showToast('📄 Generating PDF…');
-  const doc=new jsPDF({unit:'mm',format:'a4',orientation:'portrait'});
+
+  const doc=new jsPDF({unit:'mm',format:'a4'});
   const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();
-  const margin=18,contentW=W-margin*2;let y=margin;
+  const M=18,CW=W-M*2;let y=M;
 
-  function checkPage(need=12){
-    if(y+need>H-margin){
-      doc.addPage();y=margin;
-      doc.setFillColor(12,12,18);doc.rect(0,0,W,10,'F');
-      doc.setFontSize(8);doc.setTextColor(200,241,53);doc.setFont('helvetica','bold');
-      doc.text('FSTR',margin,7);
-      doc.setTextColor(120,120,140);doc.setFont('helvetica','normal');
-      doc.text((d.videoTitle||'').substring(0,55),W-margin,7,{align:'right'});
-      y=16;
-    }
+  // Colours
+  const C={
+    bg:[10,10,20],
+    surface:[22,22,36],
+    surface2:[30,30,48],
+    lime:[200,241,53],
+    limeText:[12,12,18],
+    purple:[139,92,246],
+    text:[240,240,245],
+    text2:[160,160,185],
+    text3:[100,100,130],
+    border:[45,45,70],
+    green:[16,185,129],
+    orange:[249,115,22],
+  };
+
+  function setFG(...rgb){doc.setTextColor(rgb[0],rgb[1],rgb[2]);}
+  function setFill(...rgb){doc.setFillColor(rgb[0],rgb[1],rgb[2]);}
+  function setDraw(...rgb){doc.setDrawColor(rgb[0],rgb[1],rgb[2]);}
+
+  function newPageHeader(){
+    doc.addPage();
+    setFill(...C.bg);doc.rect(0,0,W,H,'F');
+    setFill(...C.lime);doc.rect(0,0,W,1.5,'F');
+    doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...C.lime);
+    doc.text('FSTR',M,8);
+    setFG(...C.text3);doc.setFont('helvetica','normal');
+    doc.text((d.videoTitle||'').substring(0,58),W-M,8,{align:'right'});
+    setDraw(...C.border);doc.setLineWidth(0.3);doc.line(M,11,W-M,11);
+    y=20;
   }
 
-  // Cover
-  doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');
-  doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
-  doc.setFontSize(28);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('FSTR',margin,30);
-  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(150,150,165);doc.text('Learn Faster from YouTube',margin,38);
-  doc.setDrawColor(50,50,65);doc.setLineWidth(0.3);doc.line(margin,46,W-margin,46);
-  doc.setFontSize(18);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);
-  const titleLines=doc.splitTextToSize(d.videoTitle||'Video Analysis',contentW);
-  doc.text(titleLines,margin,58);y=58+titleLines.length*8;
-  doc.setFontSize(11);doc.setFont('helvetica','normal');doc.setTextColor(150,150,165);
-  doc.text(d.channelName||'',margin,y+6);y+=6;
-  if(sc!==null&&sc!==undefined){
-    const pct=Math.round((sc/5)*100);
-    const cr=pct>=80?[16,185,129]:pct>=60?[251,191,36]:[239,68,68];
-    doc.setFillColor(cr[0],cr[1],cr[2]);doc.roundedRect(margin,y+10,44,9,2,2,'F');
-    doc.setFontSize(9);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);
-    doc.text(`Quiz Score: ${sc} / ${window._fstrQuiz?.length||5} (${pct}%)`,margin+22,y+15.5,{align:'center'});y+=22;
-  }else{y+=14;}
-  doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(100,100,120);
-  doc.text(`Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}`,margin,y+8);y+=8;
-  y+=16;doc.setFillColor(25,25,38);doc.roundedRect(margin,y,contentW,38,3,3,'F');
-  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('CONTENTS',margin+8,y+8);
-  doc.setTextColor(200,200,215);doc.setFont('helvetica','normal');
-  doc.text('01  TL;DR & Key Concepts',margin+8,y+16);
-  doc.text('02  Quiz Questions & Answers',margin+8,y+24);
-  doc.text('03  3-Week Study Plan',margin+8,y+32);
+  function checkPage(need=14){if(y+need>H-M){newPageHeader();}}
 
-  // Page 2: Breakdown
-  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
-  y=margin;
-  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
-  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('01',margin+10,y+5,{align:'center'});
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('Breakdown',margin+24,y+5.5);y+=16;
-  doc.setFillColor(25,35,18);doc.roundedRect(margin,y,contentW,8,1,1,'F');
-  doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);doc.text('TL;DR',margin+4,y+5.2);y+=12;
-  doc.setFontSize(10);doc.setFont('helvetica','normal');doc.setTextColor(200,200,215);
-  const tldrLines=doc.splitTextToSize(d.tldr||'',contentW);checkPage(tldrLines.length*5+4);
-  doc.text(tldrLines,margin,y);y+=tldrLines.length*5+8;
-  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(150,150,165);doc.text('KEY CONCEPTS',margin,y);y+=6;
+  function roundRect(x,yy,w,h,r,fillRgb){
+    setFill(...fillRgb);doc.roundedRect(x,yy,w,h,r,r,'F');
+  }
+
+  // ── PAGE 1: COVER ──────────────────────────────────────────────────────────
+  setFill(...C.bg);doc.rect(0,0,W,H,'F');
+
+  // Top accent
+  setFill(...C.lime);doc.rect(0,0,W,3,'F');
+
+  // Logo area
+  roundRect(M,10,32,12,3,C.surface);
+  doc.setFontSize(11);doc.setFont('helvetica','bold');setFG(...C.lime);
+  doc.text('FSTR',M+16,18.5,{align:'center'});
+
+  // Hero title block
+  y=36;
+  const titleLines=doc.splitTextToSize(d.videoTitle||'Video Analysis',CW);
+  doc.setFontSize(22);doc.setFont('helvetica','bold');setFG(...C.text);
+  doc.text(titleLines,M,y);
+  y+=titleLines.length*10+4;
+
+  doc.setFontSize(11);doc.setFont('helvetica','normal');setFG(...C.text2);
+  doc.text(d.channelName||'',M,y);y+=7;
+
+  // Meta row
+  setDraw(...C.border);doc.setLineWidth(0.3);doc.line(M,y,W-M,y);y+=8;
+  doc.setFontSize(9);setFG(...C.text3);
+  doc.text(`Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}`,M,y);
+  doc.text('fstr.app',W-M,y,{align:'right'});
+  y+=12;
+
+  // TL;DR section
+  setFill(...C.surface);doc.roundedRect(M,y,CW,8,2,2,'F');
+  setFill(...C.lime);doc.roundedRect(M,y,3,8,1,1,'F');
+  doc.setFontSize(7);doc.setFont('helvetica','bold');setFG(...C.lime);
+  doc.text('TL;DR',M+7,y+5.2);
+  y+=12;
+
+  const tldrLines=doc.splitTextToSize(d.tldr||'',CW);
+  const tldrH=tldrLines.length*5+12;
+  roundRect(M,y,CW,tldrH,3,C.surface);
+  setFill(...C.lime);doc.roundedRect(M,y,3,tldrH,1,1,'F');
+  doc.setFontSize(9.5);doc.setFont('helvetica','normal');setFG(...C.text2);
+  doc.text(tldrLines,M+8,y+7);
+  y+=tldrH+12;
+
+  // Contents box
+  roundRect(M,y,CW,34,3,C.surface2);
+  setFill(...C.border[0],...C.border);
+  doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...C.lime);
+  doc.text('CONTENTS',M+8,y+8);
+  doc.setFontSize(9);doc.setFont('helvetica','normal');setFG(...C.text2);
+  doc.text('01  Detailed Breakdown — 7 Key Concepts',M+8,y+16);
+  doc.text('02  3-Week Study Plan with Daily Tasks',M+8,y+23);
+  doc.text('03  Suggested Next Video',M+8,y+30);
+  y+=34;
+
+  // ── PAGE 2+: BREAKDOWN ─────────────────────────────────────────────────────
+  newPageHeader();
+
+  // Section header
+  roundRect(M,y,20,8,2,C.lime);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');setFG(...C.limeText);
+  doc.text('01',M+10,y+5.5,{align:'center'});
+  doc.setFontSize(15);doc.setFont('helvetica','bold');setFG(...C.text);
+  doc.text('Detailed Breakdown',M+24,y+5.8);
+  y+=16;
+
+  // Concepts
+  doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...C.text3);
+  doc.text('KEY CONCEPTS',M,y);y+=7;
+
   (d.concepts||[]).forEach((c,i)=>{
-    const expLines=doc.splitTextToSize(c.explanation||'',contentW-18);
-    const titleL=doc.splitTextToSize(c.title||'',contentW-18);
-    const blockH=titleL.length*5.5+expLines.length*4.8+16;checkPage(blockH+6);
-    doc.setFillColor(22,22,34);doc.roundedRect(margin,y,contentW,blockH,2,2,'F');
-    doc.setFillColor(139,92,246);doc.ellipse(margin+7,y+7,4,4,'F');
-    doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(255,255,255);doc.text(String(i+1),margin+7,y+9.2,{align:'center'});
-    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(titleL,margin+15,y+8);
-    doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(175,175,200);doc.text(expLines,margin+15,y+8+titleL.length*5.5+1);
-    y+=blockH+5;
+    const titleL=doc.splitTextToSize(c.title||'',CW-18);
+    const expL=doc.splitTextToSize(c.explanation||'',CW-18);
+    const bH=titleL.length*5.5+expL.length*4.8+18;
+    checkPage(bH+6);
+
+    // Card
+    roundRect(M,y,CW,bH,3,C.surface);
+    // Left accent bar — colour changes per concept
+    const accentCols=[C.lime,C.purple,[59,130,246],[16,185,129],[249,115,22],C.purple,C.lime];
+    const ac=accentCols[i%accentCols.length];
+    setFill(...ac);doc.roundedRect(M,y,3,bH,1,1,'F');
+
+    // Number badge
+    setFill(...C.purple);doc.ellipse(M+11,y+9,4,4,'F');
+    doc.setFontSize(8);doc.setFont('helvetica','bold');setFG(255,255,255);
+    doc.text(String(i+1),M+11,y+11.2,{align:'center'});
+
+    // Concept title
+    doc.setFontSize(10.5);doc.setFont('helvetica','bold');setFG(...C.text);
+    doc.text(titleL,M+18,y+9);
+
+    // Explanation
+    doc.setFontSize(8.8);doc.setFont('helvetica','normal');setFG(...C.text2);
+    doc.text(expL,M+8,y+9+titleL.length*5.5+2);
+
+    y+=bH+5;
   });
 
-  // Page 3: Quiz
-  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
-  y=margin;
-  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
-  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('02',margin+10,y+5,{align:'center'});
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('Quiz Questions & Answers',margin+24,y+5.5);y+=16;
-  if(sc!==null&&sc!==undefined){
-    const pct2=Math.round((sc/5)*100);
-    doc.setFillColor(25,38,30);doc.roundedRect(margin,y,contentW,10,2,2,'F');
-    doc.setFontSize(10);doc.setFont('helvetica','bold');
-    if(pct2>=80)doc.setTextColor(16,185,129);else if(pct2>=60)doc.setTextColor(251,191,36);else doc.setTextColor(239,68,68);
-    doc.text(`Your Score: ${sc}/${window._fstrQuiz?.length||5} — ${pct2}%`,margin+4,y+6.5);y+=16;
-  }
-  (d.quiz||[]).forEach((q,i)=>{
-    const qLines=doc.splitTextToSize(`${i+1}. ${q.question||''}`,contentW-6);
-    const expLines2=doc.splitTextToSize(q.explanation||'',contentW-10);
-    const opts=q.options||[];let optH=0;
-    opts.forEach(opt=>{optH+=doc.splitTextToSize(opt,contentW-20).length*4.5+2;});
-    const blockH=qLines.length*5.5+optH+expLines2.length*4.8+22;checkPage(blockH+8);
-    doc.setFillColor(20,20,32);doc.roundedRect(margin,y,contentW,blockH,2,2,'F');
-    doc.setFontSize(9.5);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(qLines,margin+4,y+8);
-    let oy=y+8+qLines.length*5.5+3;
-    opts.forEach((opt,j)=>{
-      const isC=j===q.correct,oLines=doc.splitTextToSize(opt,contentW-20);
-      if(isC){doc.setFillColor(16,185,129);doc.ellipse(margin+8,oy+2,2.5,2.5,'F');doc.setTextColor(16,185,129);doc.setFont('helvetica','bold');}
-      else{doc.setDrawColor(60,60,80);doc.ellipse(margin+8,oy+2,2.5,2.5,'S');doc.setTextColor(150,150,170);doc.setFont('helvetica','normal');}
-      doc.setFontSize(8.5);doc.text(oLines,margin+14,oy+4);oy+=oLines.length*4.5+2;
-    });
-    oy+=3;doc.setFillColor(14,30,20);doc.roundedRect(margin+4,oy,contentW-8,expLines2.length*4.5+8,1,1,'F');
-    doc.setFontSize(8);doc.setFont('helvetica','italic');doc.setTextColor(120,190,145);doc.text(expLines2,margin+8,oy+6);
-    y+=blockH+6;
-  });
+  // ── STUDY PLAN ──────────────────────────────────────────────────────────────
+  newPageHeader();
 
-  // Page 4: Study Plan
-  doc.addPage();doc.setFillColor(12,12,18);doc.rect(0,0,W,H,'F');doc.setFillColor(200,241,53);doc.rect(0,0,W,2,'F');
-  y=margin;
-  doc.setFillColor(200,241,53);doc.roundedRect(margin,y,20,7,1,1,'F');
-  doc.setFontSize(8);doc.setFont('helvetica','bold');doc.setTextColor(12,12,18);doc.text('03',margin+10,y+5,{align:'center'});
-  doc.setFontSize(14);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text('3-Week Study Plan',margin+24,y+5.5);y+=16;
+  roundRect(M,y,20,8,2,C.lime);
+  doc.setFontSize(8);doc.setFont('helvetica','bold');setFG(...C.limeText);
+  doc.text('02',M+10,y+5.5,{align:'center'});
+  doc.setFontSize(15);doc.setFont('helvetica','bold');setFG(...C.text);
+  doc.text('3-Week Study Plan',M+24,y+5.8);
+  y+=16;
+
+  // Intro
   if(d.studyPlan?.intro){
-    const iLines=doc.splitTextToSize(d.studyPlan.intro,contentW);
-    doc.setFillColor(18,28,18);doc.roundedRect(margin,y,contentW,iLines.length*4.8+10,2,2,'F');
-    doc.setDrawColor(200,241,53);doc.setLineWidth(2);doc.line(margin,y,margin,y+iLines.length*4.8+10);
-    doc.setLineWidth(0.3);
-    doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(180,200,180);doc.text(iLines,margin+6,y+7);
-    y+=iLines.length*4.8+18;
-  }
-  const weekColors=[[200,241,53],[139,92,246],[59,130,246]],weekTextColors=[[12,12,18],[255,255,255],[255,255,255]];
-  (d.studyPlan?.weeks||[]).forEach((w,i)=>{
-    const wc=weekColors[i]||weekColors[0],wtc=weekTextColors[i]||weekTextColors[0];
-    const days=w.days||[];
-    let totalDayH=0;
-    days.forEach(day=>{totalDayH+=doc.splitTextToSize(day.task||'',contentW-28).length*4.8+12;});
-    const goalLines=w.goal?doc.splitTextToSize(w.goal,contentW-40):[];
-    const blockH=totalDayH+goalLines.length*4.2+24;checkPage(blockH+10);
-    doc.setFillColor(20,20,32);doc.roundedRect(margin,y,contentW,blockH,3,3,'F');
-    doc.setFillColor(wc[0],wc[1],wc[2]);doc.roundedRect(margin,y,contentW,6,2,2,'F');
-    doc.setFillColor(wc[0],wc[1],wc[2]);doc.roundedRect(margin+6,y+10,24,7,1,1,'F');
-    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(wtc[0],wtc[1],wtc[2]);
-    doc.text((w.week||'').toUpperCase(),margin+18,y+15,{align:'center'});
-    doc.setFontSize(11);doc.setFont('helvetica','bold');doc.setTextColor(240,240,245);doc.text(w.title||'',margin+34,y+15);
-    let dy=y+22;
-    if(goalLines.length){doc.setFontSize(8);doc.setFont('helvetica','italic');doc.setTextColor(130,130,155);doc.text(goalLines,margin+6,dy);dy+=goalLines.length*4.2+4;}
-    days.forEach((day,di)=>{
-      const taskLines=doc.splitTextToSize(day.task||'',contentW-28);const rowH=taskLines.length*4.8+12;
-      doc.setFontSize(7.5);doc.setFont('helvetica','bold');doc.setTextColor(wc[0],wc[1],wc[2]);doc.text(day.label||'',margin+6,dy+5.5);
-      doc.setDrawColor(45,45,65);doc.setLineWidth(0.4);doc.line(margin+30,dy+2,margin+30,dy+rowH-2);
-      doc.setFontSize(8.5);doc.setFont('helvetica','normal');doc.setTextColor(185,185,205);doc.text(taskLines,margin+34,dy+5.5);
-      if(di<days.length-1){doc.setDrawColor(35,35,52);doc.setLineWidth(0.3);doc.line(margin+4,dy+rowH,margin+contentW-4,dy+rowH);}
-      dy+=rowH;
-    });
-    y+=blockH+8;
-  });
-  if(d.studyPlan?.nextVideo){
-    checkPage(20);y+=4;
-    doc.setFillColor(20,25,35);doc.roundedRect(margin,y,contentW,14,2,2,'F');
-    doc.setFontSize(7);doc.setFont('helvetica','bold');doc.setTextColor(150,150,175);doc.text('WATCH NEXT →',margin+4,y+6);
-    doc.setFontSize(10);doc.setFont('helvetica','bold');doc.setTextColor(200,241,53);
-    doc.text(doc.splitTextToSize(d.studyPlan.nextVideo,contentW-8)[0],margin+4,y+11.5);y+=18;
+    const iL=doc.splitTextToSize(d.studyPlan.intro,CW-8);
+    roundRect(M,y,CW,iL.length*4.8+12,2,C.surface);
+    setFill(...C.lime);doc.roundedRect(M,y,3,iL.length*4.8+12,1,1,'F');
+    doc.setFontSize(9);doc.setFont('helvetica','italic');setFG(...C.text2);
+    doc.text(iL,M+7,y+8);
+    y+=iL.length*4.8+18;
   }
 
-  // Footer on every page
-  const totalPages=doc.internal.getNumberOfPages();
-  for(let p=1;p<=totalPages;p++){
-    doc.setPage(p);doc.setFillColor(18,18,28);doc.rect(0,H-10,W,10,'F');
-    doc.setFontSize(7.5);doc.setFont('helvetica','normal');doc.setTextColor(80,80,100);
-    doc.text('fstr.app — Learn Faster from YouTube',margin,H-4);
-    doc.text(`Page ${p} of ${totalPages}`,W-margin,H-4,{align:'right'});
+  const wCols=[C.lime,C.purple,[59,130,246]];
+  const wTxt=[C.limeText,[255,255,255],[255,255,255]];
+
+  (d.studyPlan?.weeks||[]).forEach((w,wi)=>{
+    const wc=wCols[wi]||wCols[0];
+    const wtc=wTxt[wi]||wTxt[0];
+    const days=w.days||[];
+
+    // Calculate total height
+    let daysH=0;
+    days.forEach(day=>{daysH+=doc.splitTextToSize(day.task||'',CW-36).length*4.8+12;});
+    const goalL=w.goal?doc.splitTextToSize(w.goal,CW-44):[]; 
+    const bH=daysH+goalL.length*4.2+28;
+    checkPage(bH+10);
+
+    // Week card
+    roundRect(M,y,CW,bH,3,C.surface);
+
+    // Top accent bar
+    setFill(...wc);doc.roundedRect(M,y,CW,5,2,2,'F');
+
+    // Week pill
+    setFill(...wc);doc.roundedRect(M+6,y+9,26,8,2,2,'F');
+    doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...wtc);
+    doc.text((w.week||'').toUpperCase(),M+19,y+14.2,{align:'center'});
+
+    // Title
+    doc.setFontSize(11);doc.setFont('helvetica','bold');setFG(...C.text);
+    doc.text(w.title||'',M+36,y+14.2);
+
+    let dy=y+22;
+
+    // Goal line
+    if(goalL.length){
+      doc.setFontSize(8);doc.setFont('helvetica','italic');setFG(...C.text3);
+      doc.text(goalL,M+8,dy);
+      dy+=goalL.length*4.2+5;
+    }
+
+    // Day rows
+    days.forEach((day,di)=>{
+      const tL=doc.splitTextToSize(day.task||'',CW-36);
+      const rH=tL.length*4.8+12;
+
+      // Day label (coloured)
+      doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...wc);
+      doc.text(day.label||'',M+8,dy+5.5);
+
+      // Vertical divider
+      setDraw(...C.border);doc.setLineWidth(0.4);
+      doc.line(M+32,dy+2,M+32,dy+rH-2);
+
+      // Task
+      doc.setFontSize(8.5);doc.setFont('helvetica','normal');setFG(...C.text2);
+      doc.text(tL,M+36,dy+5.5);
+
+      // Row separator
+      if(di<days.length-1){
+        setDraw(35,35,55);doc.setLineWidth(0.25);
+        doc.line(M+4,dy+rH,M+CW-4,dy+rH);
+      }
+      dy+=rH;
+    });
+
+    y+=bH+8;
+  });
+
+  // Next video
+  if(d.studyPlan?.nextVideo){
+    checkPage(20);
+    y+=4;
+    roundRect(M,y,CW,16,3,C.surface2);
+    doc.setFontSize(7);doc.setFont('helvetica','bold');setFG(...C.text3);
+    doc.text('WATCH NEXT →',M+6,y+7);
+    doc.setFontSize(10);doc.setFont('helvetica','bold');setFG(...C.lime);
+    const nvL=doc.splitTextToSize(d.studyPlan.nextVideo,CW-12);
+    doc.text(nvL[0],M+6,y+13);
+    y+=20;
   }
-  const safeName=(d.videoTitle||'fstr').replace(/[^a-zA-Z0-9\s]/g,'').trim().substring(0,40).replace(/\s+/g,'-').toLowerCase();
-  doc.save(`fstr-${safeName}.pdf`);showToast('📄 PDF downloaded!');
+
+  // ── Footer on every page ────────────────────────────────────────────────────
+  const total=doc.internal.getNumberOfPages();
+  for(let p=1;p<=total;p++){
+    doc.setPage(p);
+    setFill(...C.surface);doc.rect(0,H-10,W,10,'F');
+    setDraw(...C.border);doc.setLineWidth(0.2);doc.line(0,H-10,W,H-10);
+    doc.setFontSize(7.5);doc.setFont('helvetica','normal');setFG(...C.text3);
+    doc.text('fstr.app — Learn Faster from YouTube',M,H-4);
+    doc.text(`Page ${p} of ${total}`,W-M,H-4,{align:'right'});
+  }
+
+  const safe=(d.videoTitle||'fstr').replace(/[^a-zA-Z0-9\s]/g,'').trim().substring(0,40).replace(/\s+/g,'-').toLowerCase();
+  doc.save(`fstr-${safe}.pdf`);
+  showToast('📄 PDF downloaded!');
 }
 
-function exportPDFFromEntry(id){const e=getLibrary().find(e=>e.id===id);if(e)exportPDF(e.data,e.score);}
+function exportPDFFromEntry(id){
+  const e=getLibrary().find(e=>e.id===id);
+  if(e)exportPDF(e.data,e.score);
+}
 
-// ── Scroll animations ───────────────────────────────────────────────────────
+// ── Scroll animations ─────────────────────────────────────────────────────────
 const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});},{threshold:0.08});
-document.querySelectorAll('.how-item,.proof-card,.stat-item').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.55s ease,transform 0.55s ease';observer.observe(el);});
+document.querySelectorAll('.how-item,.stat-item,.pricing-card').forEach(el=>{el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity 0.55s ease,transform 0.55s ease';observer.observe(el);});
+
 let counted=false;
-const statObs=new IntersectionObserver(entries=>{if(entries[0].isIntersecting&&!counted){counted=true;let n=0;const t=setInterval(()=>{n++;document.getElementById('statSec').textContent=n+'s';if(n>=8)clearInterval(t);},80);}},{threshold:0.5});
+const statObs=new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting&&!counted){counted=true;let n=0;const t=setInterval(()=>{n++;document.getElementById('statSec').textContent=n+'s';if(n>=12)clearInterval(t);},80);}
+},{threshold:0.5});
 statObs.observe(document.querySelector('.stats-strip'));
+
 const s=document.createElement('style');
 s.textContent='@keyframes conceptIn{from{opacity:0;transform:translateX(-8px);}to{opacity:1;transform:none;}}@keyframes resultReveal{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:none;}}';
 document.head.appendChild(s);
-updateLibCount();
+
+// Init
+updateUsageUI();
 </script>
 </body>
 </html>
