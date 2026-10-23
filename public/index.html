@@ -538,7 +538,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
     <div class="section-title" style="font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-1px;color:var(--text);margin-bottom:3.5rem;line-height:1.15;">From video to knowledge<br><span style="color:var(--text-3)">in four steps.</span></div>
     <div class="how-grid">
       <div class="how-item"><div class="how-num">01</div><div class="how-icon-wrap c-lime">🔗</div><div class="how-item-title">Paste any video</div><div class="how-item-desc">Drop in a YouTube link. FSTR fetches the actual transcript — not a guess.</div></div>
-      <div class="how-item"><div class="how-num">02</div><div class="how-icon-wrap c-purple">🧠</div><div class="how-item-title">AI extracts the signal</div><div class="how-item-desc">7 deeply specific concepts based on exactly what was said — not generic summaries.</div></div>
+      <div class="how-item"><div class="how-num">02</div><div class="how-icon-wrap c-purple">🧠</div><div class="how-item-title">AI extracts the signal</div><div class="how-item-desc">5 deeply specific concepts based on exactly what was said — not generic summaries.</div></div>
       <div class="how-item"><div class="how-num">03</div><div class="how-icon-wrap c-blue">✏️</div><div class="how-item-title">Quiz yourself</div><div class="how-item-desc">5 questions from the actual video content — exposing exactly what didn't stick.</div></div>
       <div class="how-item"><div class="how-num">04</div><div class="how-icon-wrap c-green">📚</div><div class="how-item-title">Save & export</div><div class="how-item-desc">Save to your library. Export a beautiful PDF study document. Build a revision bank.</div></div>
     </div>
@@ -556,7 +556,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
       <div class="pricing-price-sub">Forever free</div>
       <ul class="pricing-features">
         <li><span class="feat-check">✓</span>3 video analyses per month</li>
-        <li><span class="feat-check">✓</span>Full breakdown with 7 concepts</li>
+        <li><span class="feat-check">✓</span>Full breakdown with 5 concepts</li>
         <li><span class="feat-check">✓</span>5-question quiz</li>
         <li><span class="feat-check">✓</span>3-week study plan</li>
         <li class="off"><span class="feat-check">✗</span>Personal library</li>
@@ -571,7 +571,7 @@ footer{border-top:1px solid var(--border);padding:2.5rem;text-align:center;}
       <div class="pricing-price-sub">per month</div>
       <ul class="pricing-features">
         <li><span class="feat-check">✓</span>Unlimited video analyses</li>
-        <li><span class="feat-check">✓</span>Full breakdown with 7 concepts</li>
+        <li><span class="feat-check">✓</span>Full breakdown with 5 concepts</li>
         <li><span class="feat-check">✓</span>5-question quiz</li>
         <li><span class="feat-check">✓</span>3-week study plan</li>
         <li><span class="feat-check">✓</span>Personal library</li>
@@ -1122,7 +1122,7 @@ function exportPDF(data,score){
   doc.setFontSize(7.5);doc.setFont('helvetica','bold');setFG(...C.lime);
   doc.text('CONTENTS',M+8,y+8);
   doc.setFontSize(9);doc.setFont('helvetica','normal');setFG(...C.text2);
-  doc.text('01  Detailed Breakdown — 7 Key Concepts',M+8,y+16);
+  doc.text('01  Detailed Breakdown — 5 Key Concepts',M+8,y+16);
   doc.text('02  3-Week Study Plan with Daily Tasks',M+8,y+23);
   doc.text('03  Suggested Next Video',M+8,y+30);
   y+=34;
