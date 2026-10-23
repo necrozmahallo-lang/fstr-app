@@ -32,6 +32,18 @@ function extractVideoId(url) {
   } catch { return null; }
 }
 
+function tryParseJson(raw) {
+  if (!raw) return null;
+  let t = raw.replace(/<think>[\s\S]*?<\/think>/gi, '').replace(/```json/gi, '').replace(/```/g, '').trim();
+  try { return JSON.parse(t); } catch {}
+  const m = t.match(/\{[\s\S]*\}/);
+  if (m) {
+    try { return JSON.parse(m[0]); } catch {}
+    try { return JSON.parse(m[0].replace(/,\s*([}\]])/g, '$1')); } catch {}
+  }
+  return null;
+}
+
 function securityHeaders(res, origin) {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -138,28 +150,39 @@ RULES:
 
   try {
     let raw = '';
+    let parsed = null;
 
     if (orKey) {
-      const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${orKey}`,
-          'X-Title': 'FSTR'
-        },
-        body: JSON.stringify({
-          model: orModel,
-          messages: [{ role: 'user', content: prompt }],
-          max_tokens: 3000,
-          temperature: 0.35
-        })
-      });
-      if (!orRes.ok) {
-        console.error('OpenRouter error:', orRes.status, await orRes.text());
-        return res.status(502).json({ error: 'AI service temporarily unavailable. Please try again.' });
+      // Free models sometimes return broken/truncated JSON — try up to 2 times
+      for (let attempt = 1; attempt <= 2 && !parsed; attempt++) {
+        const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${orKey}`,
+            'X-Title': 'FSTR'
+          },
+          body: JSON.stringify({
+            model: orModel,
+            messages: [
+              { role: 'system', content: 'You output ONLY one valid JSON object. No markdown, no commentary, no thinking text.' },
+              { role: 'user', content: prompt }
+            ],
+            max_tokens: 6000,
+            temperature: 0.3,
+            response_format: { type: 'json_object' }
+          })
+        });
+        if (!orRes.ok) {
+          console.error('OpenRouter error:', orRes.status, await orRes.text());
+          if (attempt === 2) return res.status(502).json({ error: 'AI service temporarily unavailable. Please try again.' });
+          continue;
+        }
+        const orData = await orRes.json();
+        raw = orData.choices?.[0]?.message?.content || '';
+        parsed = tryParseJson(raw);
+        if (!parsed) console.error('OpenRouter bad JSON (attempt ' + attempt + ', model ' + (orData.model || orModel) + ', finish ' + orData.choices?.[0]?.finish_reason + '):', raw.slice(0, 300), '...', raw.slice(-200));
       }
-      const orData = await orRes.json();
-      raw = orData.choices?.[0]?.message?.content || '';
     } else {
       const gemRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${gemKey}`,
@@ -185,23 +208,11 @@ RULES:
       const gemData = await gemRes.json();
       raw = gemData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
-    if (!raw) return res.status(502).json({ error: 'No response from AI. Try again.' });
-
-    let parsed;
-    try {
-      // Strip any accidental markdown fences
-      const clean = raw.replace(/^```json\s*/,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
-      parsed = JSON.parse(clean);
-    } catch {
-      // Try to extract JSON from response if wrapped in text
-      const jsonMatch = raw.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        try { parsed = JSON.parse(jsonMatch[0]); }
-        catch { return res.status(502).json({ error: 'AI returned unexpected format. Please try again.' }); }
-      } else {
-        return res.status(502).json({ error: 'AI returned unexpected format. Please try again.' });
-      }
+    if (!parsed) {
+      if (!raw) return res.status(502).json({ error: 'No response from AI. Try again.' });
+      parsed = tryParseJson(raw);
     }
+    if (!parsed) return res.status(502).json({ error: 'AI returned unexpected format. Please try again.' });
 
     if (!Array.isArray(parsed.concepts)) parsed.concepts = [];
     if (!Array.isArray(parsed.quiz)) parsed.quiz = [];
