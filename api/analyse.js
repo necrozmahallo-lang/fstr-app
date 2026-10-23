@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // FSTR — /api/analyse.js
-// Fetches the actual YouTube transcript then sends it to Gemini for deep analysis.
+// Fetches the actual YouTube transcript then sends it to OpenRouter (if
+// OPENROUTER_API_KEY is set) or Gemini (GEMINI_API_KEY) for deep analysis.
 // ─────────────────────────────────────────────────────────────────────────────
 
 const rateLimitMap = new Map();
@@ -112,8 +113,11 @@ export default async function handler(req, res) {
   const videoId = extractVideoId(url.trim());
   if (!videoId) return res.status(400).json({ error: 'Please paste a valid YouTube URL.' });
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'Service not configured correctly.' });
+  // Provider: OpenRouter if OPENROUTER_API_KEY is set, otherwise Gemini
+  const orKey  = process.env.OPENROUTER_API_KEY;
+  const gemKey = process.env.GEMINI_API_KEY;
+  if (!orKey && !gemKey) return res.status(500).json({ error: 'Service not configured correctly.' });
+  const orModel = process.env.OPENROUTER_MODEL || 'openrouter/free';
 
   const { title, channel, transcript } = await fetchTranscript(videoId);
 
@@ -133,31 +137,54 @@ RULES:
 {"videoTitle":"${title || 'YouTube Video'}","channelName":"${channel || ''}","tldr":"3-4 sentences. What specific problem does this video address? What is the presenter's specific approach? What will the viewer understand after watching?","concepts":[{"title":"First key concept from this video","explanation":"2-3 sentences. Explain exactly how this presenter explained this concept. Reference specific examples or analogies they used."},{"title":"Second concept","explanation":"2-3 specific sentences from the video"},{"title":"Third concept","explanation":"2-3 specific sentences from the video"},{"title":"Fourth concept","explanation":"2-3 specific sentences from the video"},{"title":"Fifth concept","explanation":"2-3 specific sentences from the video"}],"quiz":[{"question":"Specific question about a point from this video","options":["Wrong but plausible","Correct answer based on video","Another wrong answer","Another wrong answer"],"correct":1,"explanation":"Why this is correct based on what the video said."},{"question":"Second question","options":["A","B","C","D"],"correct":0,"explanation":"Explanation"},{"question":"Third question","options":["A","B","C","D"],"correct":2,"explanation":"Explanation"},{"question":"Fourth question","options":["A","B","C","D"],"correct":3,"explanation":"Explanation"},{"question":"Fifth question","options":["A","B","C","D"],"correct":1,"explanation":"Explanation"}],"studyPlan":{"intro":"One sentence on the specific skill this video builds.","weeks":[{"week":"Week 1","title":"Build the Foundation","goal":"Specific goal for week 1","days":[{"label":"Day 1-2","task":"Specific task referencing this video's content"},{"label":"Day 3-4","task":"Specific practice task"},{"label":"Day 5-7","task":"Consolidation exercise"}]},{"week":"Week 2","title":"Practice and Apply","goal":"Specific independent capability","days":[{"label":"Day 1-2","task":"Specific practice"},{"label":"Day 3-5","task":"Specific mini-project"},{"label":"Day 6-7","task":"Review and identify gaps"}]},{"week":"Week 3","title":"Build Something Real","goal":"Completed deliverable proving mastery","days":[{"label":"Project","task":"Specific project using this video's content"},{"label":"Requirements","task":"What the project must demonstrate"},{"label":"Share","task":"How to publish or showcase it"}]}],"nextVideo":"Best YouTube search query for the next video on this topic"}}`;
 
   try {
-    const gemRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`,
-      {
+    let raw = '';
+
+    if (orKey) {
+      const orRes = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${orKey}`,
+          'X-Title': 'FSTR'
+        },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: { maxOutputTokens: 3000, temperature: 0.35 },
-          safetySettings: [
-            { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
-          ]
+          model: orModel,
+          messages: [{ role: 'user', content: prompt }],
+          max_tokens: 3000,
+          temperature: 0.35
         })
+      });
+      if (!orRes.ok) {
+        console.error('OpenRouter error:', orRes.status, await orRes.text());
+        return res.status(502).json({ error: 'AI service temporarily unavailable. Please try again.' });
       }
-    );
-
-    if (!gemRes.ok) {
-      console.error('Gemini error:', gemRes.status, await gemRes.text());
-      return res.status(502).json({ error: 'AI service temporarily unavailable. Please try again.' });
+      const orData = await orRes.json();
+      raw = orData.choices?.[0]?.message?.content || '';
+    } else {
+      const gemRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${gemKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { maxOutputTokens: 3000, temperature: 0.35 },
+            safetySettings: [
+              { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+              { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
+              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
+            ]
+          })
+        }
+      );
+      if (!gemRes.ok) {
+        console.error('Gemini error:', gemRes.status, await gemRes.text());
+        return res.status(502).json({ error: 'AI service temporarily unavailable. Please try again.' });
+      }
+      const gemData = await gemRes.json();
+      raw = gemData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     }
-
-    const gemData = await gemRes.json();
-    const raw = gemData.candidates?.[0]?.content?.parts?.[0]?.text || '';
     if (!raw) return res.status(502).json({ error: 'No response from AI. Try again.' });
 
     let parsed;
@@ -188,7 +215,7 @@ RULES:
       videoTitle:  parsed.videoTitle  || title || 'YouTube Video',
       channelName: parsed.channelName || channel || '',
       tldr:        parsed.tldr        || '',
-      concepts:    (parsed.concepts   || []).slice(0, 7),
+      concepts:    (parsed.concepts   || []).slice(0, 5),
       quiz:        (parsed.quiz       || []).slice(0, 5),
       studyPlan:   parsed.studyPlan   || {}
     });
